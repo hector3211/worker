@@ -23,31 +23,48 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { ChangeEvent, FormEvent, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { addNewJob } from "./_serverActions";
+import { AlertPop } from "@/components/Alertpopup";
 
-type FormSchema = {
-  invoice?: string;
-  sink?: string;
-  edge?: string;
-  cutter?: string;
-  pictureUrl?: string;
-};
+const formSchema = z.object({
+  invoice: z.string(),
+  sink: z.string().max(100),
+  edge: z.string().max(100),
+  cutter: z.string().max(20),
+  picture: z.string(),
+});
+
 export default function UploadThing() {
-  const [imgUrl, setImgUrl] = useState<string | undefined>(undefined);
-  const [formState, setFormState] = useState<FormSchema>({});
-  console.log(`image url: ${imgUrl}`);
-  function onFieldChange(
-    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>
-  ) {
-    let value = e.target.value;
-    console.log(`Current Value: ${value}`);
-    setFormState({
-      ...formState,
-      [e.target.id]: value,
-    });
-  }
-
-  async function saveUserJob() {
-    console.log(`FORM STATE: ${JSON.stringify(formState)}`);
+  const [alertPop, setAlertPop] = useState<true | false>(false);
+  const [invoiceNum, setInvoiceNum] = useState<string>("");
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      invoice: "",
+      sink: "",
+      edge: "",
+      cutter: "",
+      picture: "",
+    },
+  });
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(`Form values: ${JSON.stringify(values)}`);
+    setInvoiceNum(values.invoice);
+    await addNewJob(values);
+    setAlertPop((prev) => !prev);
+    setTimeout(() => {
+      setAlertPop((prev) => !prev);
+    }, 3000);
   }
   return (
     <div className="flex min-h-screen flex-col items-center p-24">
@@ -56,8 +73,9 @@ export default function UploadThing() {
         onClientUploadComplete={(res) => {
           // Do something with the response
           console.log("Files: ", res);
-          alert("Upload Completed");
-          setImgUrl(res?.[0].fileUrl);
+          if (res) {
+            alert(`Upload Completed Please Copy URL: ${res[0].fileUrl}`);
+          }
         }}
         onUploadError={(error: Error) => {
           // Do something with the error.
@@ -66,58 +84,94 @@ export default function UploadThing() {
       />
       <Card className="w-[350px]">
         <CardHeader>
-          <CardTitle>Create Job</CardTitle>
-          <CardDescription>
-            Register a new job with a cutter today!
-          </CardDescription>
+          <CardTitle>Create New Job</CardTitle>
+          <CardDescription>Send off a new job in one-click</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid w-full items-center gap-4">
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="invoice">Invoice</Label>
-              <Input
-                id="invoice"
-                placeholder="Invoice numer of your project"
-                required
-                onChange={(e) => onFieldChange(e)}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                control={form.control}
+                name="picture"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Picture URL</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Url" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="sink">Sink</Label>
-              <Input
-                id="sink"
-                placeholder="Sink modal"
-                onChange={(e) => onFieldChange(e)}
+              <FormField
+                control={form.control}
+                name="invoice"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Invoice</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Invoice Number" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="edge">Edge</Label>
-              <Input
-                id="edge"
-                placeholder="Edge profile"
-                onChange={(e) => onFieldChange(e)}
+              <FormField
+                control={form.control}
+                name="sink"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Sink</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Sink Modal" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="cutter">cutter</Label>
-              <select
-                className="outline outline-gray-300 outline-1 rounded-md h-10"
-                id="cutter"
-                onChange={(e) => onFieldChange(e)}
-              >
-                <option value={"Hector"}>Hector</option>
-                <option value={"Carlos"}>Carlos</option>
-                <option value={"Robert"}>Robert</option>
-              </select>
-            </div>
-          </div>
+              <FormField
+                control={form.control}
+                name="edge"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Edge</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Edge Profile" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="cutter"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cutter</FormLabel>
+                    <FormControl>
+                      <Select onValueChange={field.onChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Cutter" />
+                        </SelectTrigger>
+                        <SelectContent position="popper">
+                          <SelectItem value="hector">Hector</SelectItem>
+                          <SelectItem value="carlos">Carlos</SelectItem>
+                          <SelectItem value="robert">Robert</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="mt-5 bg-blue-500 w-full">
+                Submit
+              </Button>
+            </form>
+          </Form>
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button onClick={saveUserJob} className="bg-blue-500 w-full">
-            Submit
-          </Button>
-        </CardFooter>
       </Card>
+      {alertPop && (
+        <AlertPop
+          invoice={invoiceNum}
+          message={"Successfully uploaded new job!"}
+        />
+      )}
     </div>
   );
 }

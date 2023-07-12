@@ -1,5 +1,37 @@
 import { eq } from "drizzle-orm";
-import { User, db, users } from "./drizzle";
+import { Job, NewJob, User, db, jobs, users } from "./drizzle";
+
+export async function getAllJobs() {
+  try {
+    const allJobs = await db.select().from(jobs);
+    return allJobs;
+  } catch (err) {
+    console.log(
+      `GettingAllJobs functin failed! Dbactions file with error ${err}`
+    );
+  }
+}
+
+export async function insertNewJob(job: NewJob) {
+  try {
+    const newJob = await db
+      .insert(jobs)
+      .values({
+        invoice: job.invoice,
+        sink: job.sink,
+        edge: job.edge,
+        cutter: job.cutter,
+        picture: job.picture,
+      })
+      .returning();
+
+    return newJob[0] as Job;
+  } catch (err) {
+    console.log(
+      `InsertNewJob functin failed! Dbactions file with error ${err}`
+    );
+  }
+}
 
 export async function lookUpUser(email: string) {
   const checkUser: User[] = await db

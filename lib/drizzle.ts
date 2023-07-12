@@ -42,11 +42,11 @@ export const userRaltions = relations(users, ({ many }) => ({
 
 export const jobs = pgTable("jobs", {
   id: serial("id").primaryKey(),
-  invoice: numeric("invoice").notNull(),
+  invoice: varchar("invoice").notNull(),
   sink: varchar("sink", { length: 100 }),
   edge: varchar("edge", { length: 100 }),
   cutter: varchar("cutter", { length: 20 }),
-  picture: text("pictrue"),
+  picture: text("picture"),
   completed: boolean("completed").default(false),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
@@ -86,12 +86,12 @@ export async function seed() {
     await db.execute(sql`
         CREATE TABLE IF NOT EXISTS jobs (
             id SERIAL PRIMARY KEY,
-            invoice NUMERIC NOT NULL,
+            invoice VARCHAR NOT NULL,
             sink VARCHAR(100),
             edge VARCHAR(100),
-            picture BIGINT,
-            completed BOOLEAN DEFAULT FALSE,
             cutter VARCHAR(20),
+            picture VARCHAR,
+            completed BOOLEAN DEFAULT FALSE,
             "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         );
     `);
