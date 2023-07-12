@@ -9,6 +9,8 @@ import {
   varchar,
   bigint,
   boolean,
+  uniqueIndex,
+  text,
 } from "drizzle-orm/pg-core";
 import { InferModel, relations, sql } from "drizzle-orm";
 
@@ -19,12 +21,20 @@ import { InferModel, relations, sql } from "drizzle-orm";
 //   picture: number;
 // };
 
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  email: varchar("email", { length: 250 }).notNull(),
-  name: varchar("name").notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
+export const users = pgTable(
+  "users",
+  {
+    id: serial("id").primaryKey(),
+    email: varchar("email", { length: 250 }).notNull(),
+    name: varchar("name").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  (users) => {
+    return {
+      uniqueIdx: uniqueIndex("unique_idx").on(users.email),
+    };
+  }
+);
 
 export const userRaltions = relations(users, ({ many }) => ({
   jobs: many(jobs),
@@ -35,9 +45,9 @@ export const jobs = pgTable("jobs", {
   invoice: numeric("invoice").notNull(),
   sink: varchar("sink", { length: 100 }),
   edge: varchar("edge", { length: 100 }),
-  picture: bigint("picture", { mode: "bigint" }),
-  completed: boolean("completed").default(false),
   cutter: varchar("cutter", { length: 20 }),
+  picture: text("pictrue"),
+  completed: boolean("completed").default(false),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 

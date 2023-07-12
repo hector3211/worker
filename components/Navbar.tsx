@@ -4,7 +4,8 @@ import MobileNavButton from "./Mobilenav";
 import { UserButton, currentUser } from "@clerk/nextjs";
 
 export default async function Nav() {
-  const user = await currentUser();
+  const userFromSession = await currentUser();
+
   return (
     <div className="flex w-full justify-between items-center px-5 lg:px-8 py-3 bg-zinc-300">
       <h1 className="text-xl md:text-3xl font-extrabold">Worker</h1>
@@ -13,10 +14,15 @@ export default async function Nav() {
           <Link href={"/"}>Home</Link>
         </Button>
         <Button variant={"link"} className="text-lg lg:text-xl">
-          <Link href={"/about"}>Jobs</Link>
+          <Link href={"/about"}>about</Link>
         </Button>
+        {userFromSession && (
+          <Button variant={"link"} className="text-lg lg:text-xl">
+            <Link href={`/user/`}>Jobs</Link>
+          </Button>
+        )}
         <Button variant={"link"} className="text-lg lg:text-xl">
-          {user ? (
+          {userFromSession ? (
             <UserButton afterSignOutUrl="/" />
           ) : (
             <Link href={"/sign-in"}>SignIn</Link>
