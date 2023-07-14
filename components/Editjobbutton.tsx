@@ -100,18 +100,6 @@ export function EditButton({
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <FormField
                 control={form.control}
-                name="id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Id</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Sink Modal" {...field} value={id} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
                 name="sink"
                 render={({ field }) => (
                   <FormItem>

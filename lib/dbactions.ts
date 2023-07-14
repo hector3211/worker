@@ -1,9 +1,9 @@
 import { between, eq, gte, lt } from "drizzle-orm";
-import { Job, NewJob, User, db, jobs, users } from "./drizzle";
+import { Job, NewJob, NewUser, User, db, jobs, users } from "./drizzle";
 
 export async function editJob(job: Job) {
   try {
-    const updatedJob = db
+    await db
       .update(jobs)
       .set({
         sink: job.sink,
@@ -67,24 +67,34 @@ export async function insertNewJob(job: NewJob) {
 }
 
 export async function lookUpUser(email: string) {
-  const checkUser: User[] = await db
-    .select()
-    .from(users)
-    .where(eq(users.email, email));
-  if (!checkUser) {
-    console.log(`No user in DB!`);
-    return;
+  try {
+    const checkUser: User[] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email));
+
+    return checkUser[0] as User;
+  } catch (err) {
+    console.log(`LookUpUser functin failed! Dbactions file with error ${err}`);
+    throw new Error(
+      `LookUpUser functin failed! Dbactions file with error ${err}`
+    );
   }
-  return checkUser[0] as User;
 }
 
-export async function insertNewUser(email: string, name: string) {
-  const user: User[] = await db
-    .insert(users)
-    .values({ email: email, name: name })
-    .returning();
-  if (!user) {
-    return null;
+export async function insertNewUser(newUser: NewUser) {
+  try {
+    const user: User[] = await db
+      .insert(users)
+      .values({ email: newUser.email, name: newUser.name })
+      .returning();
+    return user[0] as User;
+  } catch (err) {
+    console.log(
+      `insertNewUser functin failed! Dbactions file with error ${err}`
+    );
+    throw new Error(
+      `insertNewUser functin failed! Dbactions file with error ${err}`
+    );
   }
-  return user[0] as User;
 }
