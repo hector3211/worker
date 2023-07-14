@@ -62,6 +62,7 @@ export type User = InferModel<typeof users>;
 export type NewUser = InferModel<typeof users, "insert">;
 export type Job = InferModel<typeof jobs>;
 export type NewJob = InferModel<typeof jobs, "insert">;
+export type UpdateJob = InferModel<typeof jobs, "select">;
 
 const postgresUrl = process.env.POSTGRES_URL as string;
 

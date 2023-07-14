@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/form";
 import { addNewJob } from "./_serverActions";
 import { AlertPop } from "@/components/Alertpopup";
+import { AlertModal } from "@/components/Alertmodal";
 
 const formSchema = z.object({
   invoice: z.string(),
@@ -45,6 +46,7 @@ const formSchema = z.object({
 });
 
 export default function UploadThing() {
+  const [urlPaste, setUrlPaste] = useState<string | undefined>(undefined);
   const [alertPop, setAlertPop] = useState<true | false>(false);
   const [invoiceNum, setInvoiceNum] = useState<string>("");
   const form = useForm<z.infer<typeof formSchema>>({
@@ -67,14 +69,15 @@ export default function UploadThing() {
     }, 3000);
   }
   return (
-    <div className="flex min-h-screen flex-col items-center p-24">
+    <div className="py-11 flex flex-col items-center">
       <UploadButton
         endpoint="imageUploader"
         onClientUploadComplete={(res) => {
           // Do something with the response
           console.log("Files: ", res);
           if (res) {
-            alert(`Upload Completed Please Copy URL: ${res[0].fileUrl}`);
+            // alert(`Upload Completed Please Copy URL: ${res[0].fileUrl}`);
+            setUrlPaste(res[0].fileUrl);
           }
         }}
         onUploadError={(error: Error) => {
@@ -97,7 +100,11 @@ export default function UploadThing() {
                   <FormItem>
                     <FormLabel>Picture URL</FormLabel>
                     <FormControl>
-                      <Input placeholder="Url" {...field} />
+                      <Input
+                        placeholder={"picture url"}
+                        {...field}
+                        type="text"
+                      />
                     </FormControl>
                   </FormItem>
                 )}
