@@ -28,7 +28,7 @@ export default async function Home() {
       <UploadThing />
       <h1 className="text-center text-white text-3xl">Recently Added</h1>
       <div className="h-1 bg-white w-full"></div>
-      <div className="py-11 flex  overflow-auto">
+      <div className="py-11 flex  overflow-x-auto scroll-smooth max-w-full space-x-2">
         {jobs?.map((job) => (
           <Card className="w-[300px] relative mx-2">
             <CardHeader>
@@ -41,7 +41,7 @@ export default async function Home() {
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
               </div>
-              <div className="py-1 flex justify-evenly items-center">
+              <div className="py-1 flex flex-col justify-evenly items-center">
                 <div className="flex items-center">
                   <Label className="mr-1">Edge:</Label>
                   <p className="uppercase">{job.edge}</p>
@@ -49,6 +49,10 @@ export default async function Home() {
                 <div className="flex items-center">
                   <Label className="mr-1">Sink:</Label>
                   <p>{job.sink}</p>
+                </div>
+                <div className="flex items-center">
+                  <Label className="mr-1">Cutter:</Label>
+                  <p>{job.cutter}</p>
                 </div>
               </div>
               <div>
@@ -62,22 +66,16 @@ export default async function Home() {
               </div>
             </CardContent>
             <CardFooter>
-              {job.sink &&
-                job.edge &&
-                job.cutter &&
-                job.picture &&
-                job.completed && (
-                  <EditButton
-                    id={job.id}
-                    invoice={job.invoice}
-                    sink={job.sink}
-                    edge={job.edge}
-                    cutter={job.cutter}
-                    picture={job.picture}
-                    completed={job.completed}
-                    createdAt={job.createdAt}
-                  />
-                )}
+              <EditButton
+                id={job.id}
+                invoice={job.invoice}
+                sink={job.sink}
+                edge={job.edge}
+                cutter={job.cutter}
+                picture={job.picture}
+                completed={job.completed}
+                createdAt={job.createdAt}
+              />
             </CardFooter>
           </Card>
         ))}

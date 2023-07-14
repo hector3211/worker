@@ -29,22 +29,22 @@ import { AlertPop } from "./Alertpopup";
 type EditButtonProps = {
   id: number;
   invoice: string;
-  sink: string;
-  edge: string;
-  cutter: string;
-  picture: string;
-  completed: boolean;
+  sink: string | null;
+  edge: string | null;
+  cutter: string | null;
+  picture: string | null;
+  completed: boolean | null;
   createdAt: Date;
 };
 
 const formSchema = z.object({
   id: z.number().int(),
   invoice: z.string(),
-  sink: z.string().max(100),
-  edge: z.string().max(100),
-  cutter: z.string().max(20),
-  picture: z.string(),
-  completed: z.boolean().default(false),
+  sink: z.string().max(100).nullable(),
+  edge: z.string().max(100).nullable(),
+  cutter: z.string().max(20).nullable(),
+  picture: z.string().nullable(),
+  completed: z.boolean().nullable().default(false),
   createdAt: z.date(),
 });
 
@@ -103,7 +103,7 @@ export function EditButton({
                 name="id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Sink</FormLabel>
+                    <FormLabel>Id</FormLabel>
                     <FormControl>
                       <Input placeholder="Sink Modal" {...field} value={id} />
                     </FormControl>
@@ -117,7 +117,11 @@ export function EditButton({
                   <FormItem>
                     <FormLabel>Sink</FormLabel>
                     <FormControl>
-                      <Input placeholder="Sink Modal" {...field} />
+                      <Input
+                        placeholder="Sink Modal"
+                        {...field}
+                        value={`${sink ? sink : ""}`}
+                      />
                     </FormControl>
                   </FormItem>
                 )}
@@ -129,7 +133,11 @@ export function EditButton({
                   <FormItem>
                     <FormLabel>Edge</FormLabel>
                     <FormControl>
-                      <Input placeholder="Edge Profile" {...field} />
+                      <Input
+                        placeholder="Edge Profile"
+                        {...field}
+                        value={`${edge ? edge : ""}`}
+                      />
                     </FormControl>
                   </FormItem>
                 )}
@@ -143,7 +151,10 @@ export function EditButton({
                     <FormControl>
                       <Select onValueChange={field.onChange}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select Cutter" />
+                          <SelectValue
+                            defaultValue={`${cutter ? cutter : ""}`}
+                            placeholder={`${cutter ? cutter : "Select Cutter"}`}
+                          />
                         </SelectTrigger>
                         <SelectContent position="popper">
                           <SelectItem value="hector">Hector</SelectItem>

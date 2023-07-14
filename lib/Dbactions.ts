@@ -37,7 +37,7 @@ export async function getRecentJobs() {
 export async function getAllJobs() {
   try {
     const allJobs = await db.select().from(jobs);
-    return allJobs;
+    return allJobs as Job[];
   } catch (err) {
     console.log(
       `GettingAllJobs functin failed! Dbactions file with error ${err}`
