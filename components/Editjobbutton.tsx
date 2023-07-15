@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -25,6 +25,9 @@ import {
   SelectValue,
 } from "./ui/select";
 import { AlertPop } from "./Alertpopup";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { Terminal } from "lucide-react";
+import { loadavg } from "os";
 
 type EditButtonProps = {
   id: number;
@@ -59,6 +62,8 @@ export function EditButton({
   createdAt,
 }: EditButtonProps) {
   const [alertPop, setAlertPop] = useState<true | false>(false);
+  const [pressSubmit, setPressSubmit] = useState<true | false>(false);
+  const [loading, setLoading] = useState<true | false>(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -74,20 +79,33 @@ export function EditButton({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(`Values for updating job: ${JSON.stringify(values)}`);
     await updateJob(values);
-    setAlertPop((prev) => !prev);
-    setTimeout(() => {
-      setAlertPop((prev) => !prev);
-    }, 3000);
+    setAlertPop(true);
   }
+
+  useEffect(() => {
+    const timer = setTimeout(() => setAlertPop(false), 3000);
+    return () => clearTimeout(timer);
+  }, [alertPop]);
   return (
     <div>
       {alertPop && (
-        <AlertPop invoice={invoice} message={"Successfully updated job!"} />
+        <Alert className="w-1/2 absolute left-1/4 bottom-8 z-50">
+          <Terminal className="h-4 w-4" />
+          <AlertTitle className="text-left">
+            {form.getValues().invoice}🆕
+          </AlertTitle>
+          <AlertDescription className="text-left">
+            {"Successfully updated!"}
+          </AlertDescription>
+        </Alert>
       )}
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="w-full">Edit</Button>
+          <Button variant={"default"} className="w-80">
+            Edit
+          </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -156,7 +174,7 @@ export function EditButton({
               />
               <DialogFooter>
                 <Button type="submit" className="mt-5 bg-blue-500 w-full">
-                  Submit
+                  {loading ? "Loading..." : "Submit"}
                 </Button>
               </DialogFooter>
             </form>

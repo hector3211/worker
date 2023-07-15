@@ -29,6 +29,7 @@ import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -56,7 +57,7 @@ export default function UploadThing() {
       sink: "",
       edge: "",
       cutter: "",
-      picture: "",
+      picture: urlPaste,
     },
   });
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -104,8 +105,12 @@ export default function UploadThing() {
                         placeholder={"picture url"}
                         {...field}
                         type="text"
+                        required
                       />
                     </FormControl>
+                    <FormDescription>
+                      {form.formState.errors.picture?.message}
+                    </FormDescription>
                   </FormItem>
                 )}
               />
@@ -116,7 +121,7 @@ export default function UploadThing() {
                   <FormItem>
                     <FormLabel>Invoice</FormLabel>
                     <FormControl>
-                      <Input placeholder="Invoice Number" {...field} />
+                      <Input placeholder="Invoice Number" {...field} required />
                     </FormControl>
                   </FormItem>
                 )}
@@ -128,7 +133,7 @@ export default function UploadThing() {
                   <FormItem>
                     <FormLabel>Sink</FormLabel>
                     <FormControl>
-                      <Input placeholder="Sink Modal" {...field} />
+                      <Input placeholder="Sink Modal" {...field} required />
                     </FormControl>
                   </FormItem>
                 )}
@@ -140,7 +145,7 @@ export default function UploadThing() {
                   <FormItem>
                     <FormLabel>Edge</FormLabel>
                     <FormControl>
-                      <Input placeholder="Edge Profile" {...field} />
+                      <Input placeholder="Edge Profile" {...field} required />
                     </FormControl>
                   </FormItem>
                 )}
@@ -152,7 +157,7 @@ export default function UploadThing() {
                   <FormItem>
                     <FormLabel>Cutter</FormLabel>
                     <FormControl>
-                      <Select onValueChange={field.onChange}>
+                      <Select onValueChange={field.onChange} required>
                         <SelectTrigger>
                           <SelectValue placeholder="Select Cutter" />
                         </SelectTrigger>
