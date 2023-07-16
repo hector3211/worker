@@ -1,16 +1,19 @@
-import { Button } from "@/components/ui/button";
+"use server";
+import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { UserButton, currentUser } from "@clerk/nextjs";
+} from "./ui/dropdown-menu";
 import Link from "next/link";
 import UploadThing from "./Addjobform";
+import { getServerSession } from "next-auth";
+import { SignIn, SignOut } from "./Authactions";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export default async function MobileNavButton() {
-  const user = await currentUser();
+  const user = await getServerSession(authOptions);
   return (
     <div className="block md:hidden">
       <DropdownMenu>
@@ -21,18 +24,16 @@ export default async function MobileNavButton() {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56 mr-5">
           <DropdownMenuItem>
-            <Link href={"/"}>Home</Link>
+            <Button variant={"link"}>
+              <Link href={"/"}>Home</Link>
+            </Button>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Link href={"/about"}>Jobs</Link>
+            <Button variant={"link"}>
+              <Link href={"/about"}>Jobs</Link>
+            </Button>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            {user ? (
-              <UserButton afterSignOutUrl="/" />
-            ) : (
-              <Link href={"/sign-in"}>SignIn</Link>
-            )}
-          </DropdownMenuItem>
+          <DropdownMenuItem>{user ? <SignOut /> : <SignIn />}</DropdownMenuItem>
           {user && (
             <DropdownMenuItem>
               <UploadThing />

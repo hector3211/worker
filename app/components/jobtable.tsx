@@ -1,6 +1,5 @@
 import { Job } from "@/lib/drizzle";
 import { EditButton } from "./Editjobbutton";
-import { ScrollArea } from "./ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -19,7 +18,7 @@ type TableProps = {
 
 export default function JobTable({ jobs, category }: TableProps) {
   return (
-    <div className="w-5/6 mx-auto mt-10 py-3 px-10 border border-white rounded-md">
+    <div className="text-white w-5/6 mx-auto mt-10 py-3 px-10 border border-white rounded-md">
       <Table className="container mx-auto">
         <TableCaption>{`A list of your ${category} invoices.`}</TableCaption>
         <TableHeader>

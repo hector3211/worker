@@ -1,25 +1,24 @@
 "use client";
-
 // You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
 import "@uploadthing/react/styles.css";
 
-import { UploadButton } from "../utils/uploadthing";
+import { UploadButton } from "../../utils/uploadthing";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+} from "./ui/card";
+import { Input } from "./ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+} from "./ui/select";
+import { Button } from "./ui/button";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -31,9 +30,9 @@ import {
   FormField,
   FormItem,
   FormLabel,
-} from "@/components/ui/form";
-import { addNewJob } from "../app/_serverActions";
-import { AlertPop } from "@/components/Alertpopup";
+} from "./ui/form";
+import { addNewJob } from "../_serverActions";
+import { AlertPop } from "./Alertpopup";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 
 const formSchema = z.object({
@@ -71,7 +70,9 @@ export default function UploadThing() {
     <div>
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant={"outline"}>Add job</Button>
+          <Button className="text-md" variant={"link"}>
+            Add job
+          </Button>
         </DialogTrigger>
         <DialogContent className="bg-transparent backdrop-blur-lg">
           <div className="flex flex-col items-center">

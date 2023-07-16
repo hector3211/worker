@@ -1,7 +1,9 @@
-"use sever";
-import { User } from "@clerk/nextjs/dist/types/server";
-import { insertNewUser, lookUpUser } from "@/lib/Dbactions";
-import { currentUser } from "@clerk/nextjs";
+import { insertNewUser, lookUpUser } from "@/lib/dbactions";
+import { Session, getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { NewUser, User } from "@/lib/drizzle";
+import { redirect } from "next/navigation";
+import Nav from "@/components/Navbar";
 
 type PageProps = {
   params: {
@@ -9,15 +11,20 @@ type PageProps = {
   };
 };
 
-async function userServerAction(currUser: User | null) {
+async function userServerAction(user: Session | null) {
+  const currUser = user?.user;
   if (currUser) {
-    const userEmail = currUser.emailAddresses?.[0].emailAddress;
-    const userName = currUser?.firstName;
+    const userEmail = currUser?.email;
+    const userName = currUser?.name;
+    const newUser: NewUser = {
+      email: userEmail as string,
+      name: userName as string,
+    };
     console.log(`Current User: ${userEmail} / ${userName}\n`);
     if (userEmail && userName) {
       const checkUser = await lookUpUser(userEmail);
       if (!checkUser) {
-        const addUser = await insertNewUser(userEmail, userName);
+        const addUser = await insertNewUser(newUser);
         return addUser;
       }
       console.log(`CheckerUser Ran correctly!`);
@@ -26,14 +33,18 @@ async function userServerAction(currUser: User | null) {
   }
 }
 
-export default async function UserProfile() {
-  const userFromSession = await currentUser();
-  const authUser = await userServerAction(userFromSession);
+export default async function UserProfile({ params: userEmail }: PageProps) {
+  const currUser = await getServerSession(authOptions);
+  // const authUser = await userServerAction(currUser);
+  if (!currUser) {
+    redirect("/");
+  }
   return (
-    <div>
+    <main>
+      <Nav />
       <h1>user</h1>
-      <p>Name: {authUser?.email}</p>
-      <p>Email: {authUser?.email}</p>
-    </div>
+      <p>Name: {currUser?.user?.name}</p>
+      <p>Email: {currUser?.user?.email}</p>
+    </main>
   );
 }

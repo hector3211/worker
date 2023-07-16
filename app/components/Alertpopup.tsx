@@ -1,6 +1,6 @@
 import { Terminal, Waves } from "lucide-react";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
 type AlertProps = {
   invoice: string;

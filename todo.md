@@ -10,7 +10,7 @@
 
 [x] - put the add job form in a button on navbar only if admin in logged in
 
-[] - switch from clerk auth to nextauth (it's free!)
+[x] - switch from clerk auth to nextauth (it's free!)
 
 [] - set only admin can have the "add job" button
 

@@ -1,8 +1,8 @@
-import Nav from "@/components/Navbar";
+import Nav from "./components/Navbar";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
+import AuthProvider from "./Provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,13 +17,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={"min-h-screen max-w-full bg-zinc-800"}>
+    <html lang="en">
+      <body className={"min-h-screen max-w-full bg-gray-800"}>
+        <AuthProvider>
           <Nav />
           {children}
-        </body>
-      </html>
-    </ClerkProvider>
+        </AuthProvider>
+      </body>
+    </html>
   );
 }

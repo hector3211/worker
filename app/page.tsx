@@ -1,7 +1,8 @@
-import { seed } from "@/lib/drizzle";
 import { getAllJobs, getRecentJobs } from "@/lib/dbactions";
 import { Suspense } from "react";
-import JobTable from "@/components/jobtable";
+import JobTable from "./components/jobtable";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]/route";
 
 async function fetchJobs() {
   const recentJobs = await getRecentJobs();
@@ -14,9 +15,12 @@ async function fetchJobs() {
 
 export default async function Home() {
   const { recent, all } = await fetchJobs();
+  const user = await getServerSession(authOptions);
+
   return (
-    <main className="relative top-10">
-      {recent && recent.length && (
+    <main className="relative top-16">
+      <h1 className="text-2xl">{user?.user.role}</h1>
+      {recent && recent.length > 0 && (
         <Suspense fallback={<p>Loading...</p>}>
           <JobTable category="recent" jobs={recent} />
         </Suspense>
@@ -26,4 +30,4 @@ export default async function Home() {
       </Suspense>
     </main>
   );
-} // this up there is actually disgusting
+}

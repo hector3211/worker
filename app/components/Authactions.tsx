@@ -6,7 +6,11 @@ import { Button } from "./ui/button";
 // because it is free
 export function SignOut() {
   return (
-    <Button className="rounded-md" onClick={() => signOut()}>
+    <Button
+      variant={"link"}
+      className="text-md lg:text-lg rounded-md"
+      onClick={() => signOut()}
+    >
       Sign out
     </Button>
   );
@@ -15,8 +19,8 @@ export function SignOut() {
 export function SignIn() {
   return (
     <Button
-      variant={"outline"}
-      className="rounded-md hover:bg-orange-700"
+      variant={"link"}
+      className="p-0 text-md lg:text-lg rounded-md"
       onClick={() => signIn()}
     >
       Sign in
