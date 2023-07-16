@@ -11,7 +11,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,10 +23,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { AlertPop } from "./Alertpopup";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Terminal } from "lucide-react";
-import { loadavg } from "os";
+import { Checkbox } from "./ui/checkbox";
+import { e } from "drizzle-orm/db.d-cf0abe10";
+import { Label } from "./ui/label";
 
 type EditButtonProps = {
   id: number;
@@ -36,7 +36,7 @@ type EditButtonProps = {
   edge: string | null;
   cutter: string | null;
   picture: string | null;
-  completed: boolean | null;
+  completed: boolean;
   createdAt: Date;
 };
 
@@ -47,7 +47,7 @@ const formSchema = z.object({
   edge: z.string().max(100).nullable(),
   cutter: z.string().max(20).nullable(),
   picture: z.string().nullable(),
-  completed: z.boolean().nullable().default(false),
+  completed: z.boolean().default(false),
   createdAt: z.date(),
 });
 
@@ -81,7 +81,8 @@ export function EditButton({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(`Values for updating job: ${JSON.stringify(values)}`);
     await updateJob(values);
-    setAlertPop(true);
+    const timer = setTimeout(() => setAlertPop(true), 1000);
+    return () => clearTimeout(timer);
   }
 
   useEffect(() => {
@@ -103,15 +104,13 @@ export function EditButton({
       )}
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant={"default"} className="w-80">
-            Edit
-          </Button>
+          <Button variant={"ghost"}>Edit</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Edit job {invoice}</DialogTitle>
             <DialogDescription>
-              Make changes to your job here. Click save when you're done.
+              Make changes to your job here. Click submit when you're done.
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -169,6 +168,23 @@ export function EditButton({
                         </SelectContent>
                       </Select>
                     </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="completed"
+                render={({ field }) => (
+                  <FormItem className="mt-5">
+                    <FormControl className="">
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(e) => field.onChange(e.valueOf())}
+                      />
+                    </FormControl>
+                    <Label className="relative bottom-1 left-2">
+                      Completed
+                    </Label>
                   </FormItem>
                 )}
               />

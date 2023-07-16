@@ -1,20 +1,29 @@
 import { seed } from "@/lib/drizzle";
-import UploadThing from "./example-uploader";
 import { getAllJobs, getRecentJobs } from "@/lib/dbactions";
-import Recentjobs from "@/components/Recentjobs";
+import { Suspense } from "react";
+import JobTable from "@/components/jobtable";
 
-async function fetchRecentJobs() {
-  // const recentJobs = await getRecentJobs();
-  const recentJobs = await getAllJobs();
-  return recentJobs;
+async function fetchJobs() {
+  const recentJobs = await getRecentJobs();
+  const allJobs = await getAllJobs();
+  return {
+    recent: recentJobs,
+    all: allJobs,
+  };
 }
 
 export default async function Home() {
-  const jobs = await fetchRecentJobs();
+  const { recent, all } = await fetchJobs();
   return (
-    <main className="relative">
-      <UploadThing />
-      <Recentjobs jobs={jobs} />
+    <main className="relative top-10">
+      {recent && recent.length && (
+        <Suspense fallback={<p>Loading...</p>}>
+          <JobTable category="recent" jobs={recent} />
+        </Suspense>
+      )}
+      <Suspense fallback={<p>Loading...</p>}>
+        <JobTable category="all" jobs={all} />
+      </Suspense>
     </main>
   );
 } // this up there is actually disgusting

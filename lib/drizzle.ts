@@ -14,13 +14,6 @@ import {
 } from "drizzle-orm/pg-core";
 import { InferModel, relations, sql } from "drizzle-orm";
 
-// export type JobType = {
-//   invoice: number;
-//   sink: string;
-//   edge: string;
-//   picture: number;
-// };
-
 export const users = pgTable(
   "users",
   {
@@ -65,10 +58,6 @@ export type NewJob = InferModel<typeof jobs, "insert">;
 export type UpdateJob = InferModel<typeof jobs, "select">;
 
 const postgresUrl = process.env.POSTGRES_URL as string;
-
-// // for migrations
-// const migrationClient = postgres(postgresUrl, { max: 1 });
-// migrate(drizzle(migrationClient), { migrationsFolder: "dizzle" });
 
 // for query purposes
 const queryClient = postgres(postgresUrl);

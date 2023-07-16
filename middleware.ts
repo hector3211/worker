@@ -15,6 +15,7 @@ export default authMiddleware({
   },
   publicRoutes: [
     "/",
+    "/job/(.*)",
     "/(user)(.*)",
     "/api/uploadthing",
     "/api/user",
