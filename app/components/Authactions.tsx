@@ -8,7 +8,7 @@ export function SignOut() {
   return (
     <Button
       variant={"link"}
-      className="text-md lg:text-lg rounded-md"
+      className="text-md sm:text-lg rounded-md"
       onClick={() => signOut()}
     >
       Sign out
@@ -20,7 +20,7 @@ export function SignIn() {
   return (
     <Button
       variant={"link"}
-      className="p-0 text-md lg:text-lg rounded-md"
+      className="p-0 text-md sm:text-lg rounded-md"
       onClick={() => signIn()}
     >
       Sign in

@@ -1,4 +1,4 @@
-"use server";
+import UploadThing from "../Uploadthing";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -7,13 +7,12 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import Link from "next/link";
-import UploadThing from "./Addjobform";
 import { getServerSession } from "next-auth";
 import { SignIn, SignOut } from "./Authactions";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export default async function MobileNavButton() {
-  const user = await getServerSession(authOptions);
+  const userFromSession = await getServerSession(authOptions);
   return (
     <div className="block md:hidden">
       <DropdownMenu>
@@ -33,12 +32,10 @@ export default async function MobileNavButton() {
               <Link href={"/about"}>Jobs</Link>
             </Button>
           </DropdownMenuItem>
-          <DropdownMenuItem>{user ? <SignOut /> : <SignIn />}</DropdownMenuItem>
-          {user && (
-            <DropdownMenuItem>
-              <UploadThing />
-            </DropdownMenuItem>
-          )}
+          <DropdownMenuItem>
+            {userFromSession ? <SignOut /> : <SignIn />}
+          </DropdownMenuItem>
+          {userFromSession?.user.role && <UploadThing />}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

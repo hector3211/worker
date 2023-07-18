@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={"min-h-screen max-w-full bg-gray-800"}>
+      <body className={" max-w-full bg-zinc-900 text-white"}>
         <AuthProvider>
           <Nav />
           {children}

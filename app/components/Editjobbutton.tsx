@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Input } from "./ui/input";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -61,8 +61,9 @@ export function EditButton({
   completed,
   createdAt,
 }: EditButtonProps) {
+  const [open, setOpen] = useState(false);
   const [alertPop, setAlertPop] = useState<true | false>(false);
-  const [pressSubmit, setPressSubmit] = useState<true | false>(false);
+  const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState<true | false>(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -80,29 +81,16 @@ export function EditButton({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(`Values for updating job: ${JSON.stringify(values)}`);
-    await updateJob(values);
-    const timer = setTimeout(() => setAlertPop(true), 1000);
+    startTransition(async () => await updateJob(values));
+    setOpen((prev) => !prev);
+    setAlertPop(true);
+    const timer = setTimeout(() => setAlertPop(false), 3000);
     return () => clearTimeout(timer);
   }
 
-  useEffect(() => {
-    const timer = setTimeout(() => setAlertPop(false), 3000);
-    return () => clearTimeout(timer);
-  }, [alertPop]);
   return (
     <div>
-      {alertPop && (
-        <Alert className="w-1/2 absolute left-1/4 bottom-8 z-50">
-          <Terminal className="h-4 w-4" />
-          <AlertTitle className="text-left">
-            {form.getValues().invoice}🆕
-          </AlertTitle>
-          <AlertDescription className="text-left">
-            {"Successfully updated!"}
-          </AlertDescription>
-        </Alert>
-      )}
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button variant={"ghost"}>Edit</Button>
         </DialogTrigger>
@@ -118,14 +106,13 @@ export function EditButton({
               <FormField
                 control={form.control}
                 name="sink"
-                render={({ field }) => (
+                render={({ field: { value } }) => (
                   <FormItem>
                     <FormLabel>Sink</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Sink Modal"
-                        {...field}
-                        value={`${sink ? sink : ""}`}
+                        value={`${sink && sink}`}
                       />
                     </FormControl>
                   </FormItem>
@@ -189,14 +176,29 @@ export function EditButton({
                 )}
               />
               <DialogFooter>
-                <Button type="submit" className="mt-5 bg-blue-500 w-full">
-                  {loading ? "Loading..." : "Submit"}
+                <Button
+                  disabled={isPending}
+                  type="submit"
+                  className="mt-5 bg-blue-500 w-full"
+                >
+                  Submit
                 </Button>
               </DialogFooter>
             </form>
           </Form>
         </DialogContent>
       </Dialog>
+      {alertPop && (
+        <Alert className="w-1/2 absolute bottom-1/2 left-1/4">
+          <Terminal className="h-4 w-4" />
+          <AlertTitle className="text-left">
+            {form.getValues().invoice}🆕
+          </AlertTitle>
+          <AlertDescription className="text-left">
+            {"Successfully updated!"}
+          </AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 }

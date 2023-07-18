@@ -3,6 +3,9 @@ import { Suspense } from "react";
 import JobTable from "./components/jobtable";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
+import Upload from "./Uploadthing";
+import { DataTable } from "./jobs/Datatable";
+import { columns } from "./jobs/columns";
 
 async function fetchJobs() {
   const recentJobs = await getRecentJobs();
@@ -19,15 +22,16 @@ export default async function Home() {
 
   return (
     <main className="relative top-16">
-      <h1 className="text-2xl">{user?.user.role}</h1>
       {recent && recent.length > 0 && (
         <Suspense fallback={<p>Loading...</p>}>
-          <JobTable category="recent" jobs={recent} />
+          <DataTable columns={columns} data={recent} />
         </Suspense>
       )}
-      <Suspense fallback={<p>Loading...</p>}>
-        <JobTable category="all" jobs={all} />
-      </Suspense>
+      {all && (
+        <Suspense fallback={<p>Loading...</p>}>
+          <DataTable columns={columns} data={all} />
+        </Suspense>
+      )}
     </main>
   );
 }

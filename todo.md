@@ -12,7 +12,17 @@
 
 [x] - switch from clerk auth to nextauth (it's free!)
 
-[] - set only admin can have the "add job" button
+[] - avator picture for cutter with tooltip indicater for names
+
+[] - Mobile nav have avator picture be the button
+
+[x] - Changing True / False on job tables to icons
+
+[] - cutter dashboards should be cards in a scroll area
+
+[x] - set only admin can have the "add job" button
+
+[] - make edit button on job tables for admin only
 
 [] - get all pictures for cutters
 
