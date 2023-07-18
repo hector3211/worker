@@ -1,16 +1,6 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import Link from "next/link";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../components/ui/dropdown-menu";
-import { Button } from "../components/ui/button";
 import { EditButton } from "../components/Editjobbutton";
 
 // This type is used to define the shape of our data.
@@ -53,7 +43,7 @@ export const columns: ColumnDef<ColumnJob>[] = [
   },
   {
     id: "actions",
-    enableHiding: false,
+    enableHiding: true,
     cell: ({ row }) => {
       const job = row.original;
 

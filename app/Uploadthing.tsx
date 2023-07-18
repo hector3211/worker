@@ -2,13 +2,6 @@
 
 import "@uploadthing/react/styles.css";
 import { UploadButton } from "../utils/uploadthing";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./components/ui/card";
 import { useState } from "react";
 import { AlertPop } from "./components/Alertpopup";
 import { Dialog, DialogContent, DialogTrigger } from "./components/ui/dialog";
@@ -21,8 +14,8 @@ export default function UploadThing() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="text-black text-md sm:text-lg" variant={"ghost"}>
-          Add Job
+        <Button className="text-black" variant={"secondary"}>
+          +Add Job
         </Button>
       </DialogTrigger>
       <DialogContent className="text-black">
