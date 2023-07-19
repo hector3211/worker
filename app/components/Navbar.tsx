@@ -60,7 +60,7 @@ export default function Nav() {
 
   return (
     <div
-      className={`fixed text-black z-50 bg-gray-400 top-0 flex w-full justify-center items-center px-5 lg:px-8 py-3`}
+      className={`text-black z-50 bg-gray-400 top-0 flex w-full justify-center items-center px-5 lg:px-8 py-3`}
     >
       <NavigationMenu>
         <NavigationMenuList>

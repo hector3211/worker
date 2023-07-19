@@ -11,6 +11,7 @@ import {
   boolean,
   uniqueIndex,
   text,
+  json,
 } from "drizzle-orm/pg-core";
 import { InferModel, relations, sql } from "drizzle-orm";
 
@@ -39,7 +40,7 @@ export const jobs = pgTable("jobs", {
   sink: varchar("sink", { length: 100 }),
   edge: varchar("edge", { length: 100 }),
   cutter: varchar("cutter", { length: 20 }),
-  picture: text("picture"),
+  picture: json("pictures").$type<string[]>(),
   completed: boolean("completed").default(false),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
@@ -55,7 +56,14 @@ export type User = InferModel<typeof users>;
 export type NewUser = InferModel<typeof users, "insert">;
 export type Job = InferModel<typeof jobs>;
 export type NewJob = InferModel<typeof jobs, "insert">;
-export type UpdateJob = InferModel<typeof jobs, "select">;
+export type EditableJob = {
+  id: number;
+  invoice: string;
+  sink: string | null;
+  edge: string | null;
+  cutter: string | null;
+  completed: boolean;
+};
 
 const postgresUrl = process.env.POSTGRES_URL as string;
 
@@ -80,7 +88,7 @@ export async function seed() {
             sink VARCHAR(100),
             edge VARCHAR(100),
             cutter VARCHAR(20),
-            picture VARCHAR,
+            pictures JSON,
             completed BOOLEAN DEFAULT FALSE,
             "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         );

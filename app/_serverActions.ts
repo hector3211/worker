@@ -8,7 +8,7 @@ import {
   insertNewUser,
   lookUpUser,
 } from "@/lib/dbactions";
-import { Job, NewJob, NewUser, User } from "@/lib/drizzle";
+import { EditableJob, Job, NewJob, NewUser, User } from "@/lib/drizzle";
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { Session } from "next-auth";
@@ -23,7 +23,7 @@ export async function setCookie(req: NextRequest) {
     }
   }
 }
-export async function updateJob(job: Job) {
+export async function updateJob(job: EditableJob) {
   await editJob(job);
   revalidatePath("/");
 }

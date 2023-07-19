@@ -2,36 +2,27 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { EditButton } from "../components/Editjobbutton";
+import { Job } from "@/lib/drizzle";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type ColumnJob = {
-  id: number;
-  invoice: string;
-  sink: string | null;
-  edge: string | null;
-  cutter: string | null;
-  picture: string | null;
-  completed: boolean | null;
-  createdAt: Date;
-};
 
-export const columns: ColumnDef<ColumnJob>[] = [
+export const columns: ColumnDef<Job>[] = [
   {
     accessorKey: "invoice",
-    header: "invoice",
+    header: "Invoice",
   },
   {
     accessorKey: "sink",
-    header: "sink",
+    header: "Sink",
   },
   {
     accessorKey: "edge",
-    header: "edge",
+    header: "Edge",
   },
   {
     accessorKey: "cutter",
-    header: "cutter",
+    header: "Cutter",
   },
   {
     accessorKey: "completed",
@@ -55,8 +46,6 @@ export const columns: ColumnDef<ColumnJob>[] = [
           edge={job.edge}
           cutter={job.cutter}
           completed={job.completed as boolean}
-          picture={job.picture}
-          createdAt={job.createdAt}
         />
       );
     },

@@ -1,7 +1,16 @@
 import { between, eq, sql } from "drizzle-orm";
-import { Job, NewJob, NewUser, User, db, jobs, users } from "./drizzle";
+import {
+  EditableJob,
+  Job,
+  NewJob,
+  NewUser,
+  User,
+  db,
+  jobs,
+  users,
+} from "./drizzle";
 
-export async function editJob(job: Job) {
+export async function editJob(job: EditableJob) {
   try {
     await db
       .update(jobs)
@@ -19,10 +28,7 @@ export async function editJob(job: Job) {
 
 export async function getJob(id: number) {
   try {
-    const job: Job[] = await db.execute(sql`
-        SELECT * FROM ${jobs} WHERE ${jobs.id} = ${id}
-    `);
-
+    const job: Job[] = await db.select().from(jobs).where(eq(jobs.id, id));
     return job[0] as Job;
   } catch (err) {
     console.log(`getJob function failed! dbactions file with error ${err}`);

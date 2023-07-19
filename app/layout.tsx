@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import AuthProvider from "./Provider";
 import MobileNavButton from "./components/Mobilenav";
+import QueryProvider from "./Queryprovider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,10 +20,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={" max-w-full bg-zinc-900 text-white"}>
+      <body className={"min-h-screen max-w-full bg-zinc-900 text-white"}>
         <AuthProvider>
-          <Nav />
-          {children}
+          <QueryProvider>
+            <Nav />
+            {children}
+          </QueryProvider>
         </AuthProvider>
       </body>
     </html>

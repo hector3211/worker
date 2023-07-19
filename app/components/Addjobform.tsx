@@ -25,15 +25,21 @@ import { AlertPop } from "./Alertpopup";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 
 type JobFormProps = {
-  url: string;
+  url: string[];
 };
 
 const formSchema = z.object({
   invoice: z.string(),
-  sink: z.string().max(100),
-  edge: z.string().max(100),
-  cutter: z.string().max(20),
-  picture: z.string(),
+  sink: z
+    .string()
+    .max(100, { message: "Sink modal only supports a max of 100 characters" }),
+  edge: z
+    .string()
+    .max(100, { message: "Edge only supports a max of 100 characters" }),
+  cutter: z
+    .string()
+    .max(20, { message: "A Cutter must have less than 20 characters" }),
+  picture: z.string().array(),
 });
 
 export default function JobForm({ url }: JobFormProps) {

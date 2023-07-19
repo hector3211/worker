@@ -1,6 +1,6 @@
 [x] - Need to fix edit button, does not work maybe use the same form as used on new jobs
 
-[] - ability to save multiple pictures for a single job
+[x] - ability to save multiple pictures for a single job
 [] - indicate how many pictures for a job example: 3/3 pages
 
 [x] - make jobs clickable and route users to specific job page
@@ -11,6 +11,8 @@
 [x] - put the add job form in a button on navbar only if admin in logged in
 
 [x] - switch from clerk auth to nextauth (it's free!)
+
+[] - Sink, Edge and Cutter needs to hold more than one value
 
 [] - avator picture for cutter with tooltip indicater for names
 

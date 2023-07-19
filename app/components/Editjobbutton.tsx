@@ -26,7 +26,6 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Terminal } from "lucide-react";
 import { Checkbox } from "./ui/checkbox";
-import { e } from "drizzle-orm/db.d-cf0abe10";
 import { Label } from "./ui/label";
 
 type EditButtonProps = {
@@ -35,20 +34,16 @@ type EditButtonProps = {
   sink: string | null;
   edge: string | null;
   cutter: string | null;
-  picture: string | null;
   completed: boolean;
-  createdAt: Date;
 };
 
 const formSchema = z.object({
-  id: z.number().int(),
+  id: z.number(),
   invoice: z.string(),
   sink: z.string().max(100).nullable(),
   edge: z.string().max(100).nullable(),
   cutter: z.string().max(20).nullable(),
-  picture: z.string().nullable(),
   completed: z.boolean().default(false),
-  createdAt: z.date(),
 });
 
 export function EditButton({
@@ -57,25 +52,20 @@ export function EditButton({
   sink,
   edge,
   cutter,
-  picture,
   completed,
-  createdAt,
 }: EditButtonProps) {
   const [open, setOpen] = useState(false);
   const [alertPop, setAlertPop] = useState<true | false>(false);
   const [isPending, startTransition] = useTransition();
-  const [loading, setLoading] = useState<true | false>(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       id: id,
       invoice: invoice,
-      sink: sink,
-      edge: edge,
-      cutter: cutter,
-      picture: picture,
-      completed: completed,
-      createdAt: createdAt,
+      sink: sink && sink,
+      edge: edge && edge,
+      cutter: cutter && cutter,
+      completed: completed && completed,
     },
   });
 
@@ -89,12 +79,12 @@ export function EditButton({
   }
 
   return (
-    <div>
+    <div className="text-gray-500">
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button variant={"ghost"}>Edit</Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="text-black sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Edit job {invoice}</DialogTitle>
             <DialogDescription>
@@ -106,13 +96,14 @@ export function EditButton({
               <FormField
                 control={form.control}
                 name="sink"
-                render={({ field: { value } }) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Sink</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Sink Modal"
-                        value={`${sink && sink}`}
+                        {...field}
+                        value={`${sink ? sink : ""}`}
                       />
                     </FormControl>
                   </FormItem>
@@ -189,10 +180,10 @@ export function EditButton({
         </DialogContent>
       </Dialog>
       {alertPop && (
-        <Alert className="w-1/2 absolute bottom-1/2 left-1/4">
+        <Alert className="w-1/2 absolute top-0 left-1/4 lg:w-96 lg:left-[40%]">
           <Terminal className="h-4 w-4" />
-          <AlertTitle className="text-left">
-            {form.getValues().invoice}🆕
+          <AlertTitle className="text-left text-lg">
+            {form.getValues().invoice} ✅
           </AlertTitle>
           <AlertDescription className="text-left">
             {"Successfully updated!"}
