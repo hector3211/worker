@@ -7,6 +7,7 @@ import { authOptions } from "./api/auth/[...nextauth]/route";
 import { DataTable } from "./jobs/Datatable";
 import { columns } from "./jobs/columns";
 import { seed } from "@/lib/drizzle";
+import { Card, CardContent } from "./components/ui/card";
 
 async function fetchJobs() {
   const recentJobs = await getRecentJobs();

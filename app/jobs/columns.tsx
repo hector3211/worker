@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { EditButton } from "../components/Editjobbutton";
 import { Job } from "@/lib/drizzle";
+import Link from "next/link";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -11,6 +12,10 @@ export const columns: ColumnDef<Job>[] = [
   {
     accessorKey: "invoice",
     header: "Invoice",
+    cell: ({ row }) => {
+      const result = row.original;
+      return <Link href={`/job/${result.id}`}>{result.invoice}</Link>;
+    },
   },
   {
     accessorKey: "sink",

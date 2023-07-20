@@ -7,8 +7,8 @@ import { Button } from "./ui/button";
 export function SignOut() {
   return (
     <Button
-      variant={"ghost"}
-      className="text-md sm:text-lg rounded-md font-medium"
+      variant={"secondary"}
+      className="text-md rounded-md font-medium"
       onClick={() => signOut()}
     >
       Sign out
@@ -19,8 +19,8 @@ export function SignOut() {
 export function SignIn() {
   return (
     <Button
-      variant={"ghost"}
-      className="text-md sm:text-lg rounded-md font-medium"
+      variant={"secondary"}
+      className="text-md rounded-md font-medium"
       onClick={() => signIn()}
     >
       Sign in

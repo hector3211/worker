@@ -1,6 +1,5 @@
 "use server";
 
-import { cookies } from "next/headers";
 import {
   editJob,
   getAllJobs,
@@ -10,19 +9,12 @@ import {
 } from "@/lib/dbactions";
 import { EditableJob, Job, NewJob, NewUser, User } from "@/lib/drizzle";
 import { revalidatePath } from "next/cache";
-import { NextRequest, NextResponse } from "next/server";
-import { Session } from "next-auth";
-import { getToken } from "next-auth/jwt";
+import { utapi } from "uploadthing/server";
 
-export async function setCookie(req: NextRequest) {
-  const token = await getToken({ req });
-  const adminKey = process.env.ADMIN_KEY;
-  const adminSecret = process.env.ADMIN_SECRET;
-  if (token) {
-    if (token.userRole === adminSecret) {
-    }
-  }
+export async function utapiDelete(file: string) {
+  await utapi.deleteFiles(file);
 }
+
 export async function updateJob(job: EditableJob) {
   await editJob(job);
   revalidatePath("/");

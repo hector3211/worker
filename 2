@@ -1,0 +1,71 @@
+"use client";
+import * as React from "react";
+import Link from "next/link";
+import { Button } from "./ui/button";
+import MobileNavButton from "./Mobilenav";
+import { getServerSession } from "next-auth";
+import { SignIn, SignOut } from "./Authactions";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import UploadThing from "../Uploadthing";
+import { useSession } from "next-auth/react";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+import { Popover, PopoverContent } from "@/components/ui/popover";
+import { PopoverTrigger } from "@radix-ui/react-popover";
+
+export default function Nav() {
+  const { data: session } = useSession();
+
+  return (
+    <div
+      className={`flex justify-between items-center bg-slate-300 px-5 lg:px-8 py-3`}
+    >
+      <div className="flex space-x-5 lg:space-x-4 items-center">
+        <h1 className="text-3xl lg:text-4xl font-medium text-black">Worker</h1>
+        <div className="ml-4 space-x-1 lg:space-x-4">
+          <Button className="text-lg">Dashbaord</Button>
+          <Button variant={"ghost"} className="text-md lg:text-lg">
+            Team
+          </Button>
+          <Button variant={"ghost"} className="text-md lg:text-lg">
+            Projects
+          </Button>
+        </div>
+      </div>
+      <div className="text-black">
+        {session?.user && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <img
+                src={`${session.user.image}`}
+                alt="Image user"
+                width={40}
+                height={40}
+                className=" rounded-full hover:cursor-pointer"
+              />
+            </PopoverTrigger>
+            <PopoverContent>
+              <div className="flex flex-col">
+                <div className="flex flex-col outline outline-1 outline-black rounded-md">
+                  <p>{session.user.name}</p>
+                  <p>{session.user.email}</p>
+                  <p>{session.user.role}</p>
+                </div>
+                <div className="flex justify-between items-center">
+                  {session ? <SignOut /> : <SignIn />}
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
+      </div>
+    </div>
+  );
+}
