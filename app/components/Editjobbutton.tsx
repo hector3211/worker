@@ -14,7 +14,7 @@ import { Input } from "./ui/input";
 import { useEffect, useState, useTransition } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "./ui/form";
 import {
   Select,
@@ -31,51 +31,95 @@ import { Label } from "./ui/label";
 type EditButtonProps = {
   id: number;
   invoice: string;
-  sink: string | null;
-  edge: string | null;
-  cutter: string | null;
-  completed: boolean;
+  sinks: string[] | null;
+  edges: string[] | null;
+  cutterIds: number[] | undefined;
+  completed: boolean | null;
 };
 
 const formSchema = z.object({
   id: z.number(),
   invoice: z.string(),
-  sink: z.string().max(100).nullable(),
-  edge: z.string().max(100).nullable(),
-  cutter: z.string().max(20).nullable(),
-  completed: z.boolean().default(false),
+  sinks: z.array(z.object({ value: z.string() })).nullable(),
+  edges: z.array(z.object({ value: z.string() })).nullable(),
+  completed: z.boolean().nullable(),
+  cutterIds: z.array(
+    z.object({
+      id: z.number(),
+    })
+  ),
 });
+
+type EditableJobForm = z.infer<typeof formSchema>;
 
 export function EditButton({
   id,
   invoice,
-  sink,
-  edge,
-  cutter,
+  sinks,
+  edges,
+  cutterIds,
   completed,
 }: EditButtonProps) {
   const [open, setOpen] = useState(false);
   const [alertPop, setAlertPop] = useState<true | false>(false);
   const [isPending, startTransition] = useTransition();
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<EditableJobForm>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       id: id,
       invoice: invoice,
-      sink: sink && sink,
-      edge: edge && edge,
-      cutter: cutter && cutter,
+      sinks:
+        sinks &&
+        sinks.map((sink) => {
+          return { value: sink };
+        }),
+      edges:
+        edges &&
+        edges.map((edge) => {
+          return { value: edge };
+        }),
+      cutterIds:
+        cutterIds &&
+        cutterIds.map((id) => {
+          return { id: id };
+        }),
       completed: completed && completed,
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(`Values for updating job: ${JSON.stringify(values)}`);
-    startTransition(async () => await updateJob(values));
-    setOpen((prev) => !prev);
-    setAlertPop(true);
-    const timer = setTimeout(() => setAlertPop(false), 3000);
-    return () => clearTimeout(timer);
+  const {
+    fields: sinkField,
+    append: sinkAppend,
+    remove: sinkRemove,
+  } = useFieldArray({
+    name: "sinks",
+    control: form.control,
+  });
+  const {
+    fields: edgeField,
+    append: edgeAppend,
+    remove: edgeRemove,
+  } = useFieldArray({
+    name: "edges",
+    control: form.control,
+  });
+  const {
+    fields: cutterField,
+    append: cutterAppend,
+    remove: cutterRemove,
+  } = useFieldArray({
+    name: "cutterIds",
+    control: form.control,
+  });
+  async function onSubmit(values: EditableJobForm) {
+    console.log(
+      `EditJob Form Values for updating job: ${JSON.stringify(values)}`
+    );
+    // startTransition(async () => await updateJob(values));
+    // setOpen((prev) => !prev);
+    // setAlertPop(true);
+    // const timer = setTimeout(() => setAlertPop(false), 3000);
+    // return () => clearTimeout(timer);
   }
 
   return (
@@ -93,62 +137,134 @@ export function EditButton({
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <FormField
-                control={form.control}
-                name="sink"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Sink</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Sink Modal"
-                        {...field}
-                        value={`${sink ? sink : ""}`}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="edge"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Edge</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Edge Profile"
-                        {...field}
-                        value={`${edge ? edge : ""}`}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="cutter"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Cutter</FormLabel>
-                    <FormControl>
-                      <Select onValueChange={field.onChange}>
-                        <SelectTrigger>
-                          <SelectValue
-                            defaultValue={`${cutter ? cutter : ""}`}
-                            placeholder={`${cutter ? cutter : "Select Cutter"}`}
-                          />
-                        </SelectTrigger>
-                        <SelectContent position="popper">
-                          <SelectItem value="hector">Hector</SelectItem>
-                          <SelectItem value="carlos">Carlos</SelectItem>
-                          <SelectItem value="robert">Robert</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              <div>
+                {sinkField.map((field, idx) => (
+                  <FormField
+                    control={form.control}
+                    key={field.id}
+                    name={`sinks.${idx}.value`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Sink</FormLabel>
+                        <div className="flex items-center space-x-1">
+                          <FormControl>
+                            <Input
+                              placeholder="Sink Modal"
+                              {...field}
+                              required
+                            />
+                          </FormControl>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-8"
+                            onClick={() => sinkRemove(idx)}
+                          >
+                            Add URL
+                          </Button>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-1"
+                  onClick={() => sinkAppend({ value: "" })}
+                >
+                  Add URL
+                </Button>
+              </div>
+              <div>
+                {edgeField.map((field, idx) => (
+                  <FormField
+                    control={form.control}
+                    key={field.id}
+                    name={`edges.${idx}.value`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Edge</FormLabel>
+                        <div className="flex items-center space-x-1">
+                          <FormControl>
+                            <Input
+                              placeholder="Edge Profile"
+                              {...field}
+                              required
+                            />
+                          </FormControl>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-8"
+                            onClick={() => edgeRemove(idx)}
+                          >
+                            Add URL
+                          </Button>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-1"
+                  onClick={() => edgeAppend({ value: "" })}
+                >
+                  Add URL
+                </Button>
+              </div>
+              <div>
+                {cutterField.map((field, idx) => (
+                  <FormField
+                    control={form.control}
+                    key={field.id}
+                    name="cutterIds"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Cutter</FormLabel>
+                        <div className="flex items-center space-x-1">
+                          <FormControl>
+                            <Select onValueChange={field.onChange} required>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Cutter" />
+                              </SelectTrigger>
+                              <SelectContent position="popper">
+                                <SelectItem value="hector">Hector</SelectItem>
+                                <SelectItem value="carlos">Carlos</SelectItem>
+                                <SelectItem value="robert">Robert</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="mt-1"
+                            onClick={() => cutterRemove(idx)}
+                          >
+                            Add URL
+                          </Button>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-1"
+                  onClick={() => cutterAppend({ id: -0 })}
+                >
+                  Add URL
+                </Button>
+              </div>
               <FormField
                 control={form.control}
                 name="completed"
@@ -156,7 +272,7 @@ export function EditButton({
                   <FormItem className="mt-5">
                     <FormControl className="">
                       <Checkbox
-                        checked={field.value}
+                        checked={field.value !== null && field.value}
                         onCheckedChange={(e) => field.onChange(e.valueOf())}
                       />
                     </FormControl>

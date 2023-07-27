@@ -4,6 +4,7 @@ import { db } from "@/db";
 import {
   EditableJob,
   Job,
+  JobData,
   NewJobWithUser,
   NewUser,
   User,
@@ -67,10 +68,14 @@ export async function updateJob(job: EditableJob) {
   }
 }
 
-export async function getJobs(): Promise<Job[] | undefined> {
+export async function getJobs(): Promise<JobData[] | undefined> {
   try {
-    const allJobs = await db.select().from(jobs);
-    return allJobs as Job[];
+    const allJobs = await db.query.jobs.findMany({
+      with: {
+        user: true,
+      },
+    });
+    return allJobs;
   } catch (err) {
     console.log(
       `GettingAllJobs functin failed! Dbactions file with error ${err}`
@@ -171,6 +176,7 @@ export async function seed() {
            id SERIAL PRIMARY KEY,
           name TEXT NOT NULL,
           email TEXT NOT NULL,
+            role TEXT DEFAULT "Guest",
           created_at TIMESTAMP NOT NULL DEFAULT NOW()
     );
 

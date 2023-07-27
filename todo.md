@@ -10,6 +10,8 @@
 [x] - set only admin can have the "add job" button
 [x] - able to delete pictures in Addjobform component
 
+[] - add role to neon db "alter the user table"
+
 [] - admin able to delete or add pictuers for a job (after form)
 
 [] - add Due dates to job table

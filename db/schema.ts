@@ -18,6 +18,7 @@ export const users = pgTable(
     id: serial("id").primaryKey(),
     email: varchar("email", { length: 250 }).notNull(),
     name: varchar("name").notNull(),
+    role: varchar("role").default("Guest"),
     created_at: timestamp("created_at").defaultNow().notNull(),
   },
   (users) => {
@@ -31,7 +32,7 @@ export const jobs = pgTable("jobs", {
   invoice: varchar("invoice").notNull(),
   sink: json("sinks").$type<string[]>(),
   edge: json("edges").$type<string[]>(),
-  picture: json("pictures").$type<string[]>(),
+  pictures: json("pictures").$type<string[]>(),
   completed: boolean("completed").default(false),
   due_date: date("due_date"),
   created_at: timestamp("created_at").defaultNow().notNull(),
@@ -76,6 +77,17 @@ export type NewUser = InferModel<typeof users, "insert">;
 export type Job = InferModel<typeof jobs>;
 export type NewJob = InferModel<typeof jobs, "insert">;
 export type UsersToJob = InferModel<typeof usersToJobs>;
+export type JobData = {
+  id: number;
+  invoice: string;
+  sink: string[] | null;
+  edge: string[] | null;
+  pictures: string[] | null;
+  completed: boolean | null;
+  due_date: string | null;
+  created_at: Date;
+  user: UsersToJob[];
+};
 export type JobsWithUsers = {
   jobs: Job[];
   cutters: User[];

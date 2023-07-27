@@ -1,17 +1,17 @@
 import Link from "next/link";
 import { Button } from "./components/ui/button";
-import { getAllJobs, getRecentJobs } from "@/lib/dbactions";
+import { getJobs, getRecentJobs } from "./_serverActions";
 import { Suspense } from "react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import { DataTable } from "./jobs/Datatable";
 import { columns } from "./jobs/columns";
-import { seed } from "@/lib/drizzle";
+import { seed } from "./_serverActions";
 import { Card, CardContent } from "./components/ui/card";
 
 async function fetchJobs() {
   const recentJobs = await getRecentJobs();
-  const allJobs = await getAllJobs();
+  const allJobs = await getJobs();
   return {
     recent: recentJobs,
     all: allJobs,

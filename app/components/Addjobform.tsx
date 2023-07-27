@@ -41,12 +41,11 @@ const formSchema = z.object({
   cutters: z.array(
     z.object({
       name: z.string().nonempty(),
-      email: z.string().email().nonempty(),
     })
   ),
 });
 
-type JobForm = z.infer<typeof formSchema>;
+export type JobForm = z.infer<typeof formSchema>;
 
 export default function JobForm({ url }: JobFormProps) {
   const [alertPop, setAlertPop] = useState<true | false>(false);
@@ -56,8 +55,8 @@ export default function JobForm({ url }: JobFormProps) {
     defaultValues: {
       job: {
         invoice: "",
-        sinks: [],
-        edges: [],
+        sinks: [{ value: "pl-250" }],
+        edges: [{ value: "flat" }],
         picture: url,
       },
       cutters: [],
@@ -89,33 +88,16 @@ export default function JobForm({ url }: JobFormProps) {
   });
 
   async function onSubmit(values: JobForm) {
-    // console.log(`Form values: ${JSON.stringify(values)}`);
-    await addNewJob(values);
-    setAlertPop((prev) => !prev);
-    setTimeout(() => {
-      setAlertPop((prev) => !prev);
-    }, 3000);
+    console.log(`Add JobForm values: ${JSON.stringify(values)}`);
+    // await addNewJob(values);
+    // setAlertPop((prev) => !prev);
+    // setTimeout(() => {
+    //   setAlertPop((prev) => !prev);
+    // }, 3000);
   }
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <FormField
-          control={form.control}
-          name="job.picture"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Picture URL</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={"picture url"}
-                  {...field}
-                  type="text"
-                  required
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
         <FormField
           control={form.control}
           name="job.invoice"
@@ -145,10 +127,10 @@ export default function JobForm({ url }: JobFormProps) {
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="h-8"
+                      className="h-10 hover:bg-rose-300"
                       onClick={() => sinkRemove(idx)}
                     >
-                      Add URL
+                      Delete
                     </Button>
                   </div>
                 </FormItem>
@@ -162,7 +144,7 @@ export default function JobForm({ url }: JobFormProps) {
             className="mt-1"
             onClick={() => sinkAppend({ value: "" })}
           >
-            Add URL
+            Add Sink
           </Button>
         </div>
         <div>
@@ -182,10 +164,10 @@ export default function JobForm({ url }: JobFormProps) {
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="h-8"
+                      className="h-10 hover:bg-rose-300"
                       onClick={() => edgeRemove(idx)}
                     >
-                      Add URL
+                      Delete
                     </Button>
                   </div>
                 </FormItem>
@@ -199,7 +181,7 @@ export default function JobForm({ url }: JobFormProps) {
             className="mt-1"
             onClick={() => edgeAppend({ value: "" })}
           >
-            Add URL
+            Add Edge
           </Button>
         </div>
         <div>
@@ -207,13 +189,13 @@ export default function JobForm({ url }: JobFormProps) {
             <FormField
               control={form.control}
               key={field.id}
-              name="cutters"
+              name={`cutters.${idx}.name`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Cutter</FormLabel>
                   <div className="flex items-center space-x-1">
                     <FormControl>
-                      <Select onValueChange={field.onChange} required>
+                      <Select onValueChange={field.onChange}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select Cutter" />
                         </SelectTrigger>
@@ -228,10 +210,10 @@ export default function JobForm({ url }: JobFormProps) {
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="mt-1"
+                      className="h-10 hover:bg-rose-300"
                       onClick={() => cutterRemove(idx)}
                     >
-                      Add URL
+                      Delete
                     </Button>
                   </div>
                 </FormItem>
@@ -243,9 +225,9 @@ export default function JobForm({ url }: JobFormProps) {
             variant="outline"
             size="sm"
             className="mt-1"
-            onClick={() => cutterAppend({ name: "", email: "" })}
+            onClick={() => cutterAppend({ name: "" })}
           >
-            Add URL
+            Add Cutter
           </Button>
         </div>
         <Button type="submit" className="mt-5 bg-blue-500 w-full">
