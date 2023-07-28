@@ -27,13 +27,13 @@ export const columns: ColumnDef<JobData>[] = [
   },
   {
     accessorKey: "cutter",
-    header: "Cutter",
+    header: "Cutter_Id",
     cell: ({ row }) => {
       const results = row.original.user;
       return (
-        <div>
-          {results.map((cutter) => (
-            <p>{cutter.userId}</p>
+        <div className="flex flex-col ml-3">
+          {results.map((cutter, idx) => (
+            <p key={idx}>{cutter.userId}</p>
           ))}
         </div>
       );
@@ -52,8 +52,8 @@ export const columns: ColumnDef<JobData>[] = [
     enableHiding: true,
     cell: ({ row }) => {
       const job = row.original;
-      const cutterIds: number[] = job.user.map((id) => {
-        return id.userId;
+      const cutterIds: number[] = job.user.map((cutter) => {
+        return cutter.userId;
       });
 
       return (

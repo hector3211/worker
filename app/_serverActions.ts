@@ -5,17 +5,21 @@ import {
   EditableJob,
   Job,
   JobData,
+  JobsWithUsers,
   NewJobWithUser,
   NewUser,
+  NewUsersToJob,
   User,
   UsersToJob,
   jobs,
   users,
   usersToJobs,
 } from "@/db/schema";
-import { between, eq, sql } from "drizzle-orm";
+import { adminKey, adminSecret } from "@/utils/globalConsts";
+import { between, eq, like, sql } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { utapi } from "uploadthing/server";
+import { JobForm } from "./components/Addjobform";
 
 export async function utapiDelete(file: string) {
   await utapi.deleteFiles(file);
@@ -75,6 +79,7 @@ export async function getJobs(): Promise<JobData[] | undefined> {
         user: true,
       },
     });
+
     return allJobs;
   } catch (err) {
     console.log(
@@ -84,8 +89,10 @@ export async function getJobs(): Promise<JobData[] | undefined> {
   revalidatePath("/");
 }
 
-export async function getCutterId(name: string): Promise<number | undefined> {
-  const id = await db.select().from(users).where(eq(users.name, name));
+export async function getCutterId(email: string): Promise<number | undefined> {
+  console.log(`cutterId function with email: ${email}\n`);
+  const id = await db.select().from(users).where(eq(users.email, email));
+  console.log(`CurrerID function with user id: ${JSON.stringify(id)}\n`);
 
   return id[0].id;
 }
@@ -93,24 +100,27 @@ export async function getCutterId(name: string): Promise<number | undefined> {
 export async function addNewJob(
   job: NewJobWithUser
 ): Promise<UsersToJob | void> {
+  // console.log(`job object getting passed down: ${JSON.stringify(job)}\n`);
   try {
-    if (job) {
-    }
     const newJob = await db
       .insert(jobs)
       .values({
         ...job.job,
       })
       .returning();
-    const cutterList: UsersToJob[] = [];
+    const cutterList: NewUsersToJob[] = [];
     if (job.cutters) {
       for (const cutter of job.cutters) {
-        const cutterId = await getCutterId(cutter.name);
+        // console.log(`current cutter name: ${cutter}\n`);
+        const cutterId = await getCutterId(cutter);
         if (cutterId) {
+          // console.log(`Got cutter ID⭐: ${cutterId}\n`);
           cutterList.push({ userId: cutterId, jobId: newJob[0].id });
         } else {
-          console.log(`In addNewJob getting cutter ID failed!`);
-          throw new Error(`In addNewJob getting cutter ID failed!`);
+          console.log(
+            `getCutterId in addNewJob function FAILED getting cutter ID!\n`
+          );
+          // throw new Error(`In addNewJob getting cutter ID failed!`);
         }
       }
     }
@@ -120,7 +130,7 @@ export async function addNewJob(
       .values(cutterList)
       .returning();
 
-    console.log(`NEW JOB ADDED:${newUserToJob}\n`);
+    console.log(`NEW JOB ADDED✅:${newUserToJob}\n`);
     return newUserToJob[0];
   } catch (err) {
     console.log(
@@ -154,9 +164,16 @@ export async function lookUpUserByEmail(
 
 export async function addNewUser(user: NewUser): Promise<User | undefined> {
   try {
+    if (user && user.email === adminSecret) {
+      const newUser: User[] = await db
+        .insert(users)
+        .values({ email: user.email, name: user.name, role: adminKey })
+        .returning();
+      return newUser[0] as User;
+    }
     const newUser: User[] = await db
       .insert(users)
-      .values({ email: user.email, name: user.name })
+      .values({ email: user.email, name: user.name, role: user.role })
       .returning();
     return newUser[0] as User;
   } catch (err) {
@@ -176,7 +193,7 @@ export async function seed() {
            id SERIAL PRIMARY KEY,
           name TEXT NOT NULL,
           email TEXT NOT NULL,
-            role TEXT DEFAULT "Guest",
+            role VARCHAR DEFAULT "Guest",
           created_at TIMESTAMP NOT NULL DEFAULT NOW()
     );
 
@@ -185,6 +202,7 @@ export async function seed() {
           invoice TEXT UNIQUE NOT NULL,
           sinks JSON,
           edges JSON,
+            prictures JSON,
           completed BOOLEAN DEFAULT FALSE,
           due_date DATE,
           created_at TIMESTAMP NOT NULL DEFAULT NOW(),

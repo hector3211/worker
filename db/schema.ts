@@ -77,6 +77,7 @@ export type NewUser = InferModel<typeof users, "insert">;
 export type Job = InferModel<typeof jobs>;
 export type NewJob = InferModel<typeof jobs, "insert">;
 export type UsersToJob = InferModel<typeof usersToJobs>;
+export type NewUsersToJob = InferModel<typeof usersToJobs, "insert">;
 export type JobData = {
   id: number;
   invoice: string;
@@ -102,5 +103,5 @@ export type EditableJob = {
 };
 export type NewJobWithUser = {
   job: NewJob;
-  cutters: NewUser[];
+  cutters: string[];
 };

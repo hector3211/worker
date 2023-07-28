@@ -23,7 +23,7 @@ import {
 import { addNewJob } from "../_serverActions";
 import { AlertPop } from "./Alertpopup";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
-import { jobs } from "@/db/schema";
+import { JobsWithUsers, NewJobWithUser, jobs } from "@/db/schema";
 
 type JobFormProps = {
   url: string[];
@@ -31,7 +31,9 @@ type JobFormProps = {
 
 const formSchema = z.object({
   job: z.object({
-    invoice: z.string(),
+    invoice: z
+      .string()
+      .nonempty({ message: "Please provide an invoice number!" }),
     sinks: z.array(z.object({ value: z.string() })),
     edges: z.array(z.object({ value: z.string() })),
     picture: z.string().array(),
@@ -40,7 +42,7 @@ const formSchema = z.object({
 
   cutters: z.array(
     z.object({
-      name: z.string().nonempty(),
+      email: z.string().nonempty({ message: "Please provide a cutter name!" }),
     })
   ),
 });
@@ -59,7 +61,7 @@ export default function JobForm({ url }: JobFormProps) {
         edges: [{ value: "flat" }],
         picture: url,
       },
-      cutters: [],
+      cutters: [{ email: "" }],
     },
   });
   const {
@@ -89,11 +91,33 @@ export default function JobForm({ url }: JobFormProps) {
 
   async function onSubmit(values: JobForm) {
     console.log(`Add JobForm values: ${JSON.stringify(values)}`);
-    // await addNewJob(values);
-    // setAlertPop((prev) => !prev);
-    // setTimeout(() => {
-    //   setAlertPop((prev) => !prev);
-    // }, 3000);
+    const sinkArr = values.job.sinks.map((sink) => {
+      return sink.value;
+    });
+    const edgeArr = values.job.edges.map((edge) => {
+      return edge.value;
+    });
+
+    const cutterArr = values.cutters.map((cutter) => {
+      return cutter.email;
+    });
+
+    const newJob: NewJobWithUser = {
+      job: {
+        invoice: values.job.invoice,
+        sink: sinkArr,
+        edge: edgeArr,
+      },
+      cutters: cutterArr,
+    };
+
+    await addNewJob(newJob);
+    setInvoiceNum(values.job.invoice);
+    setAlertPop((prev) => !prev);
+    setTimeout(() => {
+      setAlertPop((prev) => !prev);
+      setInvoiceNum("");
+    }, 3000);
   }
   return (
     <Form {...form}>
@@ -189,7 +213,7 @@ export default function JobForm({ url }: JobFormProps) {
             <FormField
               control={form.control}
               key={field.id}
-              name={`cutters.${idx}.name`}
+              name={`cutters.${idx}.email`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Cutter</FormLabel>
@@ -200,9 +224,15 @@ export default function JobForm({ url }: JobFormProps) {
                           <SelectValue placeholder="Select Cutter" />
                         </SelectTrigger>
                         <SelectContent position="popper">
-                          <SelectItem value="hector">Hector</SelectItem>
-                          <SelectItem value="carlos">Carlos</SelectItem>
-                          <SelectItem value="robert">Robert</SelectItem>
+                          <SelectItem value="horopesa494@gmail.com">
+                            Hector
+                          </SelectItem>
+                          <SelectItem value="carlos@yahoo.com">
+                            Carlos
+                          </SelectItem>
+                          <SelectItem value="robert@yahoo.com">
+                            Robert
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -225,7 +255,7 @@ export default function JobForm({ url }: JobFormProps) {
             variant="outline"
             size="sm"
             className="mt-1"
-            onClick={() => cutterAppend({ name: "" })}
+            onClick={() => cutterAppend({ email: "" })}
           >
             Add Cutter
           </Button>

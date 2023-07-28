@@ -60,6 +60,7 @@ export function EditButton({
   cutterIds,
   completed,
 }: EditButtonProps) {
+  console.log(`current cutterIds passed to EditButton: ${cutterIds}\n`);
   const [open, setOpen] = useState(false);
   const [alertPop, setAlertPop] = useState<true | false>(false);
   const [isPending, startTransition] = useTransition();
@@ -158,10 +159,10 @@ export function EditButton({
                             type="button"
                             variant="outline"
                             size="sm"
-                            className="h-8"
+                            className="h-10"
                             onClick={() => sinkRemove(idx)}
                           >
-                            Add URL
+                            Delete
                           </Button>
                         </div>
                       </FormItem>
@@ -175,7 +176,7 @@ export function EditButton({
                   className="mt-1"
                   onClick={() => sinkAppend({ value: "" })}
                 >
-                  Add URL
+                  Add Sink
                 </Button>
               </div>
               <div>
@@ -199,10 +200,10 @@ export function EditButton({
                             type="button"
                             variant="outline"
                             size="sm"
-                            className="h-8"
+                            className="h-10"
                             onClick={() => edgeRemove(idx)}
                           >
-                            Add URL
+                            Delete
                           </Button>
                         </div>
                       </FormItem>
@@ -216,7 +217,7 @@ export function EditButton({
                   className="mt-1"
                   onClick={() => edgeAppend({ value: "" })}
                 >
-                  Add URL
+                  Add Edge
                 </Button>
               </div>
               <div>
@@ -224,15 +225,22 @@ export function EditButton({
                   <FormField
                     control={form.control}
                     key={field.id}
-                    name="cutterIds"
+                    name={`cutterIds.${idx}.id`}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Cutter</FormLabel>
                         <div className="flex items-center space-x-1">
-                          <FormControl>
-                            <Select onValueChange={field.onChange} required>
+                          <FormControl className="text-black">
+                            <Select
+                              defaultValue={field.value.toString()}
+                              onValueChange={field.onChange}
+                              required
+                            >
                               <SelectTrigger>
-                                <SelectValue placeholder="Select Cutter" />
+                                <SelectValue
+                                  className="text-black"
+                                  placeholder={field.value.toString()}
+                                />
                               </SelectTrigger>
                               <SelectContent position="popper">
                                 <SelectItem value="hector">Hector</SelectItem>
@@ -245,10 +253,10 @@ export function EditButton({
                             type="button"
                             variant="outline"
                             size="sm"
-                            className="mt-1"
+                            className="h-10"
                             onClick={() => cutterRemove(idx)}
                           >
-                            Add URL
+                            Delete
                           </Button>
                         </div>
                       </FormItem>
@@ -262,7 +270,7 @@ export function EditButton({
                   className="mt-1"
                   onClick={() => cutterAppend({ id: -0 })}
                 >
-                  Add URL
+                  Add Cutter
                 </Button>
               </div>
               <FormField
