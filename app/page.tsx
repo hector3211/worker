@@ -10,16 +10,16 @@ import { seed } from "./_serverActions";
 import { Card, CardContent } from "./components/ui/card";
 
 async function fetchJobs() {
-  const recentJobs = await getRecentJobs();
+  // const recentJobs = await getRecentJobs();
   const allJobs = await getJobs();
   return {
-    recent: recentJobs,
+    // recent: recentJobs,
     all: allJobs,
   };
 }
 
 export default async function Home() {
-  const { recent, all } = await fetchJobs();
+  const { all } = await fetchJobs();
   const user = await getServerSession(authOptions);
 
   return (

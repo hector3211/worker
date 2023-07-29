@@ -1,4 +1,15 @@
 "use client";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Input } from "./ui/input";
 import {
   Select,
@@ -7,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { Button } from "./ui/button";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -19,6 +29,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "./ui/form";
 import { addNewJob } from "../_serverActions";
 import { AlertPop } from "./Alertpopup";
@@ -38,11 +49,12 @@ const formSchema = z.object({
     edges: z.array(z.object({ value: z.string() })),
     picture: z.string().array(),
     completed: z.boolean().default(false),
+    dueDate: z.date(),
   }),
 
   cutters: z.array(
     z.object({
-      email: z.string().nonempty({ message: "Please provide a cutter name!" }),
+      email: z.string(),
     })
   ),
 });
@@ -50,6 +62,7 @@ const formSchema = z.object({
 export type JobForm = z.infer<typeof formSchema>;
 
 export default function JobForm({ url }: JobFormProps) {
+  const [date, setDate] = useState<Date>();
   const [alertPop, setAlertPop] = useState<true | false>(false);
   const [invoiceNum, setInvoiceNum] = useState<string>("");
   const form = useForm<JobForm>({
@@ -90,7 +103,7 @@ export default function JobForm({ url }: JobFormProps) {
   });
 
   async function onSubmit(values: JobForm) {
-    console.log(`Add JobForm values: ${JSON.stringify(values)}`);
+    // console.log(`Add JobForm values: ${JSON.stringify(values)}`);
     const sinkArr = values.job.sinks.map((sink) => {
       return sink.value;
     });
@@ -107,10 +120,12 @@ export default function JobForm({ url }: JobFormProps) {
         invoice: values.job.invoice,
         sink: sinkArr,
         edge: edgeArr,
+        due_date: values.job.dueDate.toISOString().slice(0, 10),
       },
       cutters: cutterArr,
     };
 
+    console.log(`Add JobForm values: ${JSON.stringify(newJob)}`);
     await addNewJob(newJob);
     setInvoiceNum(values.job.invoice);
     setAlertPop((prev) => !prev);
@@ -227,10 +242,10 @@ export default function JobForm({ url }: JobFormProps) {
                           <SelectItem value="horopesa494@gmail.com">
                             Hector
                           </SelectItem>
-                          <SelectItem value="carlos@yahoo.com">
+                          <SelectItem value="carlos@ymail.com">
                             Carlos
                           </SelectItem>
-                          <SelectItem value="robert@yahoo.com">
+                          <SelectItem value="robert@ymail.com">
                             Robert
                           </SelectItem>
                         </SelectContent>
@@ -260,6 +275,47 @@ export default function JobForm({ url }: JobFormProps) {
             Add Cutter
           </Button>
         </div>
+        <FormField
+          control={form.control}
+          name="job.dueDate"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Date of birth</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-[240px] pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value ? (
+                        format(field.value, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormDescription>
+                Your date of birth is used to calculate your age.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <Button type="submit" className="mt-5 bg-blue-500 w-full">
           Submit
         </Button>

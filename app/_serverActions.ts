@@ -54,21 +54,48 @@ export async function updateJob(job: EditableJob) {
       .where(eq(jobs.id, job.id));
 
     if (job.cutters) {
-      for (const cutter of job.cutters) {
+      for (const email of job.cutters) {
         const user = await db
           .select()
           .from(users)
-          .where(eq(users.name, cutter));
+          .where(eq(users.email, email));
         await db
           .update(usersToJobs)
           .set({
             userId: user[0].id,
+            userName: user[0].name,
+            userEmail: user[0].email,
           })
           .where(eq(usersToJobs.jobId, job.id));
+        // await db
+        //   .insert(usersToJobs)
+        //   .values({
+        //     userId: user[0].id,
+        //     userName: user[0].name,
+        //     userEmail: user[0].email,
+        //     jobId: job.id,
+        //   })
+        //   .onConflictDoUpdate({
+        //     target: usersToJobs.userId,
+        //     set: { jobId: job.id },
+        //     where: sql`${usersToJobs.jobId} = '${job.id}'`,
+        //   });
       }
     }
+    revalidateTag("jobdata");
   } catch (err) {
     console.log(`editJob function failed! dbactions file with error ${err}`);
+  }
+}
+
+export async function getManyUsers() {
+  try {
+    const users = await db.query.users.findMany({});
+    return users;
+  } catch (err) {
+    console.log(
+      `getManyUsers function failed! dbactions file with error ${err}`
+    );
   }
 }
 
@@ -80,6 +107,7 @@ export async function getJobs(): Promise<JobData[] | undefined> {
       },
     });
 
+    revalidateTag("jobdata");
     return allJobs;
   } catch (err) {
     console.log(
@@ -89,13 +117,19 @@ export async function getJobs(): Promise<JobData[] | undefined> {
   revalidatePath("/");
 }
 
-export async function getCutterId(email: string): Promise<number | undefined> {
-  console.log(`cutterId function with email: ${email}\n`);
-  const id = await db.select().from(users).where(eq(users.email, email));
-  console.log(`CurrerID function with user id: ${JSON.stringify(id)}\n`);
-
-  return id[0].id;
+export async function getCutterInfo(email: string): Promise<User | undefined> {
+  console.log(`getcutterINFO email: ${email}`);
+  const user = await db.select().from(users).where(eq(users.email, email));
+  return user[0];
 }
+
+// export async function getCutterId(email: string): Promise<number | undefined> {
+//   console.log(`cutterId function with email: ${email}\n`);
+//   const id = await db.select().from(users).where(eq(users.email, email));
+//   console.log(`CurrerID function with user id: ${JSON.stringify(id)}\n`);
+//
+//   return id[0].id;
+// }
 
 export async function addNewJob(
   job: NewJobWithUser
@@ -112,13 +146,18 @@ export async function addNewJob(
     if (job.cutters) {
       for (const cutter of job.cutters) {
         // console.log(`current cutter name: ${cutter}\n`);
-        const cutterId = await getCutterId(cutter);
-        if (cutterId) {
+        const cutterInfo = await getCutterInfo(cutter);
+        if (cutterInfo) {
           // console.log(`Got cutter ID⭐: ${cutterId}\n`);
-          cutterList.push({ userId: cutterId, jobId: newJob[0].id });
+          cutterList.push({
+            userId: cutterInfo.id,
+            jobId: newJob[0].id,
+            userName: cutterInfo.name,
+            userEmail: cutterInfo.email,
+          });
         } else {
           console.log(
-            `getCutterId in addNewJob function FAILED getting cutter ID!\n`
+            `getCutterInfo in addNewJob function FAILED getting cutter ID!\n`
           );
           // throw new Error(`In addNewJob getting cutter ID failed!`);
         }
@@ -194,6 +233,7 @@ export async function seed() {
           name TEXT NOT NULL,
           email TEXT NOT NULL,
             role VARCHAR DEFAULT "Guest",
+            due_date DATE,
           created_at TIMESTAMP NOT NULL DEFAULT NOW()
     );
 
@@ -210,6 +250,8 @@ export async function seed() {
 
         CREATE TABLE IF NOT EXISTS users_to_jobs (
           user_id INTEGER REFERENCES users(id),
+            user_email VARCHAR REFERENCES users(email),
+            user_name VARCHAR REFERENCES users(name),
           job_id INTEGER REFERENCES jobs(id),
           PRIMARY KEY (user_id, job_id)
         );
@@ -217,6 +259,14 @@ export async function seed() {
         ALTER TABLE users_to_jobs
         ADD CONSTRAINT fk_users FOREIGN KEY (user_id)
         REFERENCES users(id) ON DELETE CASCADE;
+
+        ALTER TABLE users_to_jobs
+        ADD CONSTRAINT fk_users FOREIGN KEY (user_email)
+        REFERENCES users(email) ON DELETE CASCADE;
+
+        ALTER TABLE users_to_jobs
+        ADD CONSTRAINT fk_users FOREIGN KEY (user_name)
+        REFERENCES users(name) ON DELETE CASCADE;
 
         ALTER TABLE users_to_jobs
         ADD CONSTRAINT fk_jobs FOREIGN KEY (job_id)

@@ -23,7 +23,7 @@ export const users = pgTable(
   },
   (users) => {
     return {
-      uniqueIdx: uniqueIndex("unique_idx").on(users.email),
+      uniqueIdx: uniqueIndex("unique_idx").on(users.email, users.name),
     };
   }
 );
@@ -44,12 +44,18 @@ export const usersToJobs = pgTable(
     userId: integer("user_id")
       .notNull()
       .references(() => users.id),
+    userName: varchar("user_name")
+      .notNull()
+      .references(() => users.name),
+    userEmail: varchar("user_email")
+      .notNull()
+      .references(() => users.name),
     jobId: integer("job_id")
       .notNull()
       .references(() => jobs.id),
   },
   (t) => ({
-    pk: primaryKey(t.userId, t.jobId),
+    pk: primaryKey(t.userId, t.userName, t.jobId),
   })
 );
 
@@ -63,8 +69,8 @@ export const jobRaltions = relations(jobs, ({ many }) => ({
 
 export const usersToJobsRelations = relations(usersToJobs, ({ one }) => ({
   user: one(users, {
-    fields: [usersToJobs.userId],
-    references: [users.id],
+    fields: [usersToJobs.userId, usersToJobs.userName, usersToJobs.userEmail],
+    references: [users.id, users.name, users.email],
   }),
   job: one(jobs, {
     fields: [usersToJobs.jobId],

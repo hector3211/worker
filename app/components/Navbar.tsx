@@ -16,9 +16,7 @@ export default function Nav() {
   console.log(`current path: ${pathName}`);
 
   return (
-    <div
-      className={`flex justify-between items-center bg-slate-300 px-5 lg:px-8 py-3`}
-    >
+    <div className={`flex justify-between items-center px-5 lg:px-8 py-3`}>
       <div className="md:hidden">
         <Popover>
           <PopoverTrigger asChild>

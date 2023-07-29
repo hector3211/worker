@@ -14,7 +14,11 @@ export const columns: ColumnDef<JobData>[] = [
     header: "Invoice",
     cell: ({ row }) => {
       const result = row.original;
-      return <Link href={`/job/${result.id}`}>{result.invoice}</Link>;
+      return (
+        <Link className="font-medium" href={`/job/${result.id}`}>
+          {result.invoice}
+        </Link>
+      );
     },
   },
   {
@@ -27,13 +31,13 @@ export const columns: ColumnDef<JobData>[] = [
   },
   {
     accessorKey: "cutter",
-    header: "Cutter_Id",
+    header: "Cutters",
     cell: ({ row }) => {
       const results = row.original.user;
       return (
         <div className="flex flex-col ml-3">
           {results.map((cutter, idx) => (
-            <p key={idx}>{cutter.userId}</p>
+            <p key={idx}>{cutter.userName}</p>
           ))}
         </div>
       );
@@ -48,12 +52,16 @@ export const columns: ColumnDef<JobData>[] = [
     },
   },
   {
+    accessorKey: "due_date",
+    header: "Due_Date",
+  },
+  {
     id: "actions",
     enableHiding: true,
     cell: ({ row }) => {
       const job = row.original;
-      const cutterIds: number[] = job.user.map((cutter) => {
-        return cutter.userId;
+      const cutterEmails: string[] = job.user.map((cutter) => {
+        return cutter.userEmail;
       });
 
       return (
@@ -62,7 +70,7 @@ export const columns: ColumnDef<JobData>[] = [
           invoice={job.invoice}
           sinks={job.sink}
           edges={job.edge}
-          cutterIds={cutterIds}
+          cutterEmails={cutterEmails}
           completed={job.completed as boolean}
         />
       );

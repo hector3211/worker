@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import AuthProvider from "./Provider";
 import MobileNavButton from "./components/Mobilenav";
 import QueryProvider from "./Queryprovider";
+import { Separator } from "./components/ui/separator";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,10 +21,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={"max-h-screen max-w-full bg-slate-800 text-white"}>
+      <body className={"max-h-screen max-w-full bg-zinc-950 text-white"}>
         <AuthProvider>
           <QueryProvider>
             <Nav />
+            <Separator />
             {children}
           </QueryProvider>
         </AuthProvider>

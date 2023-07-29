@@ -26,7 +26,7 @@ import { useRouter } from "next/navigation";
 const formSchema = z.object({
   name: z.string(),
   email: z.string().email({ message: "Invalid Email Address." }),
-  role: z.string().max(5, {
+  role: z.string().max(6, {
     message: "Invalid role string, must be five characters or less.",
   }),
 });

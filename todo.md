@@ -2,24 +2,31 @@
 [x] - ability to save multiple pictures for a single job
 [x] - indicate how many pictures for a job example: 3/3 pages
 [x] - make jobs clickable and route users to specific job page
-[x] - show all different picutres associated with job
 [x] - page.tsx should be public to all and show completed and recently added jobs
-[x] - put the add job form in a button on navbar only if admin in logged in
 [x] - switch from clerk auth to nextauth (it's free!)
 [x] - Changing True / False on job tables to icons
-[x] - set only admin can have the "add job" button
 [x] - able to delete pictures in Addjobform component
+[x] - add role to neon db "alter the user table"
+[x] - add Due dates to job table
+[x] - Sink, Edge and Cutter needs to hold more than one value
+[x] - create many to many relations between jobs and users table
 
-[] - add role to neon db "alter the user table"
+[] - add sent("created_at") column to job DateTable component
+
+[] - add due_date to editbutton component
+
+[] - fix update job server function **hard**
+
+[] - set only admin can have the "+Add Job", "+Add User" button
+
+[] - set only admin can access dashboard
+
+[] - clean up navbar
+
+[] - finish UI for job/[id]/
+
+[] - finish UI for users page
 
 [] - admin able to delete or add pictuers for a job (after form)
 
-[] - add Due dates to job table
-
-[] - add notes section to job table
-
-[] - Sink, Edge and Cutter needs to hold more than one value
-
-[] - cutter page should be cards of jobs in a scroll area
-
-[] - avator picture for cutter with tooltip indicater for names
+[] - add "notes" column for jobs

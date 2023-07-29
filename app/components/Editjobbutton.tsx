@@ -33,7 +33,7 @@ type EditButtonProps = {
   invoice: string;
   sinks: string[] | null;
   edges: string[] | null;
-  cutterIds: number[] | undefined;
+  cutterEmails: string[] | undefined;
   completed: boolean | null;
 };
 
@@ -43,9 +43,9 @@ const formSchema = z.object({
   sinks: z.array(z.object({ value: z.string() })).nullable(),
   edges: z.array(z.object({ value: z.string() })).nullable(),
   completed: z.boolean().nullable(),
-  cutterIds: z.array(
+  cutterEmails: z.array(
     z.object({
-      id: z.number(),
+      email: z.string().email(),
     })
   ),
 });
@@ -57,10 +57,10 @@ export function EditButton({
   invoice,
   sinks,
   edges,
-  cutterIds,
+  cutterEmails,
   completed,
 }: EditButtonProps) {
-  console.log(`current cutterIds passed to EditButton: ${cutterIds}\n`);
+  // console.log(`current cutterEmails passed to EditButton: ${cutterEmails}\n`);
   const [open, setOpen] = useState(false);
   const [alertPop, setAlertPop] = useState<true | false>(false);
   const [isPending, startTransition] = useTransition();
@@ -79,10 +79,10 @@ export function EditButton({
         edges.map((edge) => {
           return { value: edge };
         }),
-      cutterIds:
-        cutterIds &&
-        cutterIds.map((id) => {
-          return { id: id };
+      cutterEmails:
+        cutterEmails &&
+        cutterEmails.map((email) => {
+          return { email };
         }),
       completed: completed && completed,
     },
@@ -109,7 +109,7 @@ export function EditButton({
     append: cutterAppend,
     remove: cutterRemove,
   } = useFieldArray({
-    name: "cutterIds",
+    name: "cutterEmails",
     control: form.control,
   });
   async function onSubmit(values: EditableJobForm) {
@@ -225,27 +225,32 @@ export function EditButton({
                   <FormField
                     control={form.control}
                     key={field.id}
-                    name={`cutterIds.${idx}.id`}
+                    name={`cutterEmails.${idx}.email`}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Cutter</FormLabel>
                         <div className="flex items-center space-x-1">
                           <FormControl className="text-black">
                             <Select
-                              defaultValue={field.value.toString()}
+                              defaultValue={field.value}
                               onValueChange={field.onChange}
-                              required
                             >
                               <SelectTrigger>
                                 <SelectValue
                                   className="text-black"
-                                  placeholder={field.value.toString()}
+                                  placeholder={"Select cutter"}
                                 />
                               </SelectTrigger>
                               <SelectContent position="popper">
-                                <SelectItem value="hector">Hector</SelectItem>
-                                <SelectItem value="carlos">Carlos</SelectItem>
-                                <SelectItem value="robert">Robert</SelectItem>
+                                <SelectItem value="horopesa494@gmail.com">
+                                  Hector
+                                </SelectItem>
+                                <SelectItem value="carlos@ymail.com">
+                                  Carlos
+                                </SelectItem>
+                                <SelectItem value="robert@ymail.com">
+                                  Robert
+                                </SelectItem>
                               </SelectContent>
                             </Select>
                           </FormControl>
@@ -268,7 +273,7 @@ export function EditButton({
                   variant="outline"
                   size="sm"
                   className="mt-1"
-                  onClick={() => cutterAppend({ id: -0 })}
+                  onClick={() => cutterAppend({ name: "" })}
                 >
                   Add Cutter
                 </Button>
