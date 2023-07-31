@@ -104,8 +104,9 @@ export type EditableJob = {
   invoice: string;
   sinks: string[] | null;
   edges: string[] | null;
-  cutters: string[] | null;
   completed: boolean;
+  due_date: string;
+  cutters: string[] | null;
 };
 export type NewJobWithUser = {
   job: NewJob;

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "./components/ui/button";
-import { getJobs, getRecentJobs } from "./_serverActions";
+import { getJobs, getTodaysJobs } from "./_serverActions";
 import { Suspense } from "react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
@@ -10,7 +10,7 @@ import { seed } from "./_serverActions";
 import { Card, CardContent } from "./components/ui/card";
 
 async function fetchJobs() {
-  // const recentJobs = await getRecentJobs();
+  // const recentJobs = await getTodaysJobs();
   const allJobs = await getJobs();
   return {
     // recent: recentJobs,

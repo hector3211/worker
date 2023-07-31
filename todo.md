@@ -10,10 +10,8 @@
 [x] - add Due dates to job table
 [x] - Sink, Edge and Cutter needs to hold more than one value
 [x] - create many to many relations between jobs and users table
-
-[] - add sent("created_at") column to job DateTable component
-
-[] - add due_date to editbutton component
+[x] - add sent("created_at") column to job DateTable component
+[x] - add due_date to editbutton component
 
 [] - fix update job server function **hard**
 

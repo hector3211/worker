@@ -1,7 +1,7 @@
 "use client";
+
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -65,6 +65,7 @@ export default function JobForm({ url }: JobFormProps) {
   const [date, setDate] = useState<Date>();
   const [alertPop, setAlertPop] = useState<true | false>(false);
   const [invoiceNum, setInvoiceNum] = useState<string>("");
+  const [isPending, startTransition] = useTransition();
   const form = useForm<JobForm>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -126,6 +127,7 @@ export default function JobForm({ url }: JobFormProps) {
     };
 
     console.log(`Add JobForm values: ${JSON.stringify(newJob)}`);
+
     await addNewJob(newJob);
     setInvoiceNum(values.job.invoice);
     setAlertPop((prev) => !prev);

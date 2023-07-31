@@ -19,13 +19,12 @@ import { adminKey, adminSecret } from "@/utils/globalConsts";
 import { between, eq, like, sql } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { utapi } from "uploadthing/server";
-import { JobForm } from "./components/Addjobform";
 
-export async function utapiDelete(file: string) {
+export async function utapiDelete(file: string): Promise<void> {
   await utapi.deleteFiles(file);
 }
 
-export async function getRecentJobs() {
+export async function getTodaysJobs(): Promise<Job[] | undefined> {
   try {
     const currDateTime = new Date();
     const todayAtSixeAm = new Date();
@@ -44,47 +43,82 @@ export async function getRecentJobs() {
 }
 export async function updateJob(job: EditableJob) {
   try {
-    await db
-      .update(jobs)
-      .set({
-        sink: job.sinks,
-        edge: job.edges,
-        completed: job.completed,
-      })
-      .where(eq(jobs.id, job.id));
+    // updating selected job
+    // const updatedJob = await db
+    //   .update(jobs)
+    //   .set({
+    //     sink: job.sinks,
+    //     edge: job.edges,
+    //     completed: job.completed,
+    //     due_date: job.due_date.toISOString().slice(0, 10),
+    //   })
+    //   .where(eq(jobs.id, job.id))
+    //   .returning({ updatedJobId: jobs.id });
+    // console.log(`Just updated ✅ jobID: ${updatedJob}`);
 
-    if (job.cutters) {
-      for (const email of job.cutters) {
-        const user = await db
-          .select()
-          .from(users)
-          .where(eq(users.email, email));
-        await db
-          .update(usersToJobs)
-          .set({
-            userId: user[0].id,
-            userName: user[0].name,
-            userEmail: user[0].email,
-          })
-          .where(eq(usersToJobs.jobId, job.id));
-        // await db
-        //   .insert(usersToJobs)
-        //   .values({
-        //     userId: user[0].id,
-        //     userName: user[0].name,
-        //     userEmail: user[0].email,
-        //     jobId: job.id,
-        //   })
-        //   .onConflictDoUpdate({
-        //     target: usersToJobs.userId,
-        //     set: { jobId: job.id },
-        //     where: sql`${usersToJobs.jobId} = '${job.id}'`,
-        //   });
-      }
+    // querying all users on selected job
+    const usersOnJob = await db
+      .select()
+      .from(usersToJobs)
+      .where(eq(usersToJobs.jobId, job.id));
+
+    // current cutters for job selected
+    const currentUserEmails = usersOnJob.map((user) => {
+      return user.userEmail;
+    });
+    console.log(`Current cutter's list: ${currentUserEmails}`);
+    // new list of cutters for editing
+    const newEmails = job.cutters;
+    console.log(`New cutter's list: ${newEmails}`);
+
+    // getting old cutter list
+    const emailsToDelete = currentUserEmails?.filter(
+      (email) => !newEmails?.includes(email)
+    );
+    console.log(`Current emails to delete from DB: ${emailsToDelete}`);
+    // deleting cutters no longer on selected job
+    if (emailsToDelete.length > 0) {
+      // for (const email of emailsToDelete) {
+      //     const userDeletedFromJob = await db
+      //         .delete(usersToJobs)
+      //         .where(eq(usersToJobs.userEmail, email))
+      //         .returning({ deletedUserWithEmail: usersToJobs.userEmail });
+      //     console.log(`Just Deleted 💥 ${userDeletedFromJob}`);
+      // }
+    } else {
+      console.log(`No Email to delete so four loop didn't execute...`);
     }
+
+    // newly added emails('cutters') to job
+    const emailsToInsert = newEmails?.filter(
+      (email) => !currentUserEmails.includes(email)
+    );
+    console.log(`New emails to insert in DB! :${emailsToInsert}`);
+    // if (emailsToInsert) {
+    //   for (const email of emailsToInsert) {
+    //     const userToInsert = await getCutterInfo(email);
+    //     if (userToInsert) {
+    //       // inserting new emails(cutters) associated with selected job
+    //       const newAddedUserToJob = await db.insert(usersToJobs).values({
+    //         userId: userToInsert.id,
+    //         jobId: job.id,
+    //         userEmail: userToInsert.email,
+    //         userName: userToInsert.name,
+    //       });
+    //       console.log(`Inserted new_user_to_job ✅ : ${newAddedUserToJob}`);
+    //     } else {
+    //       console.log(`Error userToInsert failed! line: 86`);
+    //     }
+    //   }
+    // } else {
+    //   console.log(`Error EmailsToInsert failed! line: 85`);
+    // }
     revalidateTag("jobdata");
+    // console.log(`Everything worked correctly!!! 🆕`);
   } catch (err) {
-    console.log(`editJob function failed! dbactions file with error ${err}`);
+    console.log(
+      `editJob function failed! _serveractions file with error ${err}`
+    );
   }
 }
 
@@ -94,7 +128,7 @@ export async function getManyUsers() {
     return users;
   } catch (err) {
     console.log(
-      `getManyUsers function failed! dbactions file with error ${err}`
+      `getManyUsers function failed! _serveractions file with error ${err}`
     );
   }
 }
@@ -111,7 +145,7 @@ export async function getJobs(): Promise<JobData[] | undefined> {
     return allJobs;
   } catch (err) {
     console.log(
-      `GettingAllJobs functin failed! Dbactions file with error ${err}`
+      `GettingAllJobs functin failed! _serveractions file with error ${err}`
     );
   }
   revalidatePath("/");
@@ -133,7 +167,7 @@ export async function getCutterInfo(email: string): Promise<User | undefined> {
 
 export async function addNewJob(
   job: NewJobWithUser
-): Promise<UsersToJob | void> {
+): Promise<UsersToJob | undefined> {
   // console.log(`job object getting passed down: ${JSON.stringify(job)}\n`);
   try {
     const newJob = await db
@@ -173,7 +207,7 @@ export async function addNewJob(
     return newUserToJob[0];
   } catch (err) {
     console.log(
-      `InsertNewJob functin failed! Dbactions file with error ${err}`
+      `InsertNewJob functin failed! _serveractions file with error ${err}`
     );
   }
   // revalidatePath("/");
@@ -194,7 +228,9 @@ export async function lookUpUserByEmail(
     }
     return false;
   } catch (err) {
-    console.log(`LookUpUser functin failed! Dbactions file with error ${err}`);
+    console.log(
+      `LookUpUser functin failed! _serveractions file with error ${err}`
+    );
     // throw new Error(
     //   `LookUpUser functin failed! Dbactions file with error ${err}`
     // );
@@ -217,7 +253,7 @@ export async function addNewUser(user: NewUser): Promise<User | undefined> {
     return newUser[0] as User;
   } catch (err) {
     console.log(
-      `insertNewUser functin failed! Dbactions file with error ${err}`
+      `insertNewUser functin failed! _serveractions file with error ${err}`
     );
     // throw new Error(
     //   `insertNewUser functin failed! Dbactions file with error ${err}`

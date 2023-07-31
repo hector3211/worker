@@ -15,7 +15,15 @@ import { useEffect, useState, useTransition } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "./ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
 import {
   Select,
   SelectContent,
@@ -27,6 +35,16 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Terminal } from "lucide-react";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { EditableJob } from "@/db/schema";
 
 type EditButtonProps = {
   id: number;
@@ -35,6 +53,7 @@ type EditButtonProps = {
   edges: string[] | null;
   cutterEmails: string[] | undefined;
   completed: boolean | null;
+  dueDate: Date | null;
 };
 
 const formSchema = z.object({
@@ -43,6 +62,7 @@ const formSchema = z.object({
   sinks: z.array(z.object({ value: z.string() })).nullable(),
   edges: z.array(z.object({ value: z.string() })).nullable(),
   completed: z.boolean().nullable(),
+  dueDate: z.date().nullable(),
   cutterEmails: z.array(
     z.object({
       email: z.string().email(),
@@ -59,8 +79,10 @@ export function EditButton({
   edges,
   cutterEmails,
   completed,
+  dueDate,
 }: EditButtonProps) {
   // console.log(`current cutterEmails passed to EditButton: ${cutterEmails}\n`);
+  // console.log(`current date time passed: ${dueDate}\n`);
   const [open, setOpen] = useState(false);
   const [alertPop, setAlertPop] = useState<true | false>(false);
   const [isPending, startTransition] = useTransition();
@@ -85,6 +107,7 @@ export function EditButton({
           return { email };
         }),
       completed: completed && completed,
+      dueDate: dueDate && dueDate,
     },
   });
 
@@ -113,14 +136,46 @@ export function EditButton({
     control: form.control,
   });
   async function onSubmit(values: EditableJobForm) {
-    console.log(
-      `EditJob Form Values for updating job: ${JSON.stringify(values)}`
-    );
-    // startTransition(async () => await updateJob(values));
-    // setOpen((prev) => !prev);
-    // setAlertPop(true);
-    // const timer = setTimeout(() => setAlertPop(false), 3000);
-    // return () => clearTimeout(timer);
+    // console.log(
+    //   `EditJob Form Values for updating job: ${JSON.stringify(values)}`
+    // );
+    // console.log(
+    //   `Reformated due-date: ${values.dueDate?.toISOString().slice(0, 10)}`
+    // );
+    if (
+      values &&
+      values.sinks &&
+      values.edges &&
+      values.dueDate &&
+      values.completed
+    ) {
+      const sinkArr = values.sinks.map((sink) => {
+        return sink.value;
+      });
+      const edgeArr = values.edges.map((edge) => {
+        return edge.value;
+      });
+
+      const cutterArr = values.cutterEmails.map((cutter) => {
+        return cutter.email;
+      });
+      const editedJob: EditableJob = {
+        ...values,
+        sinks: sinkArr,
+        edges: edgeArr,
+        due_date: values.dueDate.toISOString().slice(0, 10),
+        completed: values.completed,
+        cutters: cutterArr,
+      };
+      console.log(
+        `EditJob Form Values for updating job: ${JSON.stringify(editedJob)}`
+      );
+      startTransition(async () => await updateJob(editedJob));
+      setOpen((prev) => !prev);
+      // setAlertPop(true);
+      // const timer = setTimeout(() => setAlertPop(false), 3000);
+      // return () => clearTimeout(timer);
+    }
   }
 
   return (
@@ -273,11 +328,52 @@ export function EditButton({
                   variant="outline"
                   size="sm"
                   className="mt-1"
-                  onClick={() => cutterAppend({ name: "" })}
+                  onClick={() => cutterAppend({ email: "" })}
                 >
                   Add Cutter
                 </Button>
               </div>
+              <FormField
+                control={form.control}
+                name="dueDate"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Date of Installation</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-[240px] pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value ? field.value : undefined}
+                          onSelect={field.onChange}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormDescription>
+                      Installation date for job.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="completed"

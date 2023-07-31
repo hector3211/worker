@@ -44,6 +44,14 @@ export const columns: ColumnDef<JobData>[] = [
     },
   },
   {
+    accessorKey: "created_at",
+    header: "Sent",
+    cell: ({ row }) => {
+      const date = row.original.created_at;
+      return <p>{date.toISOString().slice(0, 10)}</p>;
+    },
+  },
+  {
     accessorKey: "completed",
     header: "Done",
     cell: ({ row }) => {
@@ -63,6 +71,21 @@ export const columns: ColumnDef<JobData>[] = [
       const cutterEmails: string[] = job.user.map((cutter) => {
         return cutter.userEmail;
       });
+      let myDate: Date | null = new Date();
+      const mystring: string | null = job.due_date;
+      if (mystring) {
+        myDate = new Date(mystring);
+        // Split the date string into year, month, and day components
+        const [yearStr, monthStr, dayStr] = mystring.split("-");
+
+        // JavaScript's Date object uses 0-based month index, so we need to subtract 1 from the month
+        const month = parseInt(monthStr, 10) - 1;
+
+        // Create the Date object with the components
+        myDate = new Date(parseInt(yearStr, 10), month, parseInt(dayStr, 10));
+      } else {
+        myDate = null;
+      }
 
       return (
         <EditButton
@@ -72,6 +95,7 @@ export const columns: ColumnDef<JobData>[] = [
           edges={job.edge}
           cutterEmails={cutterEmails}
           completed={job.completed as boolean}
+          dueDate={myDate}
         />
       );
     },
