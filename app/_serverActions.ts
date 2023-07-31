@@ -16,7 +16,7 @@ import {
   usersToJobs,
 } from "@/db/schema";
 import { adminKey, adminSecret } from "@/utils/globalConsts";
-import { between, eq, like, sql } from "drizzle-orm";
+import { and, between, eq, like, sql } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { utapi } from "uploadthing/server";
 
@@ -44,17 +44,17 @@ export async function getTodaysJobs(): Promise<Job[] | undefined> {
 export async function updateJob(job: EditableJob) {
   try {
     // updating selected job
-    // const updatedJob = await db
-    //   .update(jobs)
-    //   .set({
-    //     sink: job.sinks,
-    //     edge: job.edges,
-    //     completed: job.completed,
-    //     due_date: job.due_date.toISOString().slice(0, 10),
-    //   })
-    //   .where(eq(jobs.id, job.id))
-    //   .returning({ updatedJobId: jobs.id });
-    // console.log(`Just updated ✅ jobID: ${updatedJob}`);
+    const updatedJob = await db
+      .update(jobs)
+      .set({
+        sink: job.sinks,
+        edge: job.edges,
+        completed: job.completed,
+        due_date: job.due_date,
+      })
+      .where(eq(jobs.id, job.id))
+      .returning({ updatedJobId: jobs.id });
+    console.log(`Just updated ✅ jobID: ${updatedJob}`);
 
     // querying all users on selected job
     const usersOnJob = await db
@@ -78,15 +78,20 @@ export async function updateJob(job: EditableJob) {
     console.log(`Current emails to delete from DB: ${emailsToDelete}`);
     // deleting cutters no longer on selected job
     if (emailsToDelete.length > 0) {
-      // for (const email of emailsToDelete) {
-      //     const userDeletedFromJob = await db
-      //         .delete(usersToJobs)
-      //         .where(eq(usersToJobs.userEmail, email))
-      //         .returning({ deletedUserWithEmail: usersToJobs.userEmail });
-      //     console.log(`Just Deleted 💥 ${userDeletedFromJob}`);
-      // }
+      for (const email of emailsToDelete) {
+        const userDeletedFromJob = await db
+          .delete(usersToJobs)
+          .where(
+            and(eq(usersToJobs.userEmail, email), eq(usersToJobs.jobId, job.id))
+          )
+          .returning({
+            deletedUserWithEmail: usersToJobs.userEmail,
+            jobId: usersToJobs.jobId,
+          });
+        console.log(`Just Deleted 💥 ${JSON.stringify(userDeletedFromJob)}`);
+      }
     } else {
-      console.log(`No Email to delete so four loop didn't execute...`);
+      console.log(`No Emails to Delete!`);
     }
 
     // newly added emails('cutters') to job
@@ -94,27 +99,32 @@ export async function updateJob(job: EditableJob) {
       (email) => !currentUserEmails.includes(email)
     );
     console.log(`New emails to insert in DB! :${emailsToInsert}`);
-    // if (emailsToInsert) {
-    //   for (const email of emailsToInsert) {
-    //     const userToInsert = await getCutterInfo(email);
-    //     if (userToInsert) {
-    //       // inserting new emails(cutters) associated with selected job
-    //       const newAddedUserToJob = await db.insert(usersToJobs).values({
-    //         userId: userToInsert.id,
-    //         jobId: job.id,
-    //         userEmail: userToInsert.email,
-    //         userName: userToInsert.name,
-    //       });
-    //       console.log(`Inserted new_user_to_job ✅ : ${newAddedUserToJob}`);
-    //     } else {
-    //       console.log(`Error userToInsert failed! line: 86`);
-    //     }
-    //   }
-    // } else {
-    //   console.log(`Error EmailsToInsert failed! line: 85`);
-    // }
+    if (emailsToInsert && emailsToInsert.length > 0) {
+      for (const email of emailsToInsert) {
+        const userToInsert = await getCutterInfo(email);
+        if (userToInsert) {
+          // inserting new emails(cutters) associated with selected job
+          const newAddedUserToJob = await db
+            .insert(usersToJobs)
+            .values({
+              userId: userToInsert.id,
+              jobId: job.id,
+              userEmail: userToInsert.email,
+              userName: userToInsert.name,
+            })
+            .returning({ userEmail: usersToJobs.userEmail });
+          console.log(
+            `Inserted new_user_to_job ✅ : ${newAddedUserToJob[0].userEmail}`
+          );
+        } else {
+          console.log(`Error userToInsert failed! line: 86`);
+        }
+      }
+    } else {
+      console.log(`No Emails to Insert`);
+    }
     revalidateTag("jobdata");
-    // console.log(`Everything worked correctly!!! 🆕`);
+    console.log(`Everything worked correctly!!! 🆕`);
   } catch (err) {
     console.log(
       `editJob function failed! _serveractions file with error ${err}`

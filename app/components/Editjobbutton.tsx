@@ -136,19 +136,14 @@ export function EditButton({
     control: form.control,
   });
   async function onSubmit(values: EditableJobForm) {
-    // console.log(
-    //   `EditJob Form Values for updating job: ${JSON.stringify(values)}`
-    // );
+    console.log(
+      `EditJob Form Values for updating job step ONE: ${JSON.stringify(values)}`
+    );
     // console.log(
     //   `Reformated due-date: ${values.dueDate?.toISOString().slice(0, 10)}`
     // );
-    if (
-      values &&
-      values.sinks &&
-      values.edges &&
-      values.dueDate &&
-      values.completed
-    ) {
+    if (values && values.sinks && values.edges && values.dueDate) {
+      console.log(`Things are starting to heat up!`);
       const sinkArr = values.sinks.map((sink) => {
         return sink.value;
       });
@@ -164,17 +159,21 @@ export function EditButton({
         sinks: sinkArr,
         edges: edgeArr,
         due_date: values.dueDate.toISOString().slice(0, 10),
-        completed: values.completed,
+        completed: values.completed ? values.completed : false,
         cutters: cutterArr,
       };
       console.log(
         `EditJob Form Values for updating job: ${JSON.stringify(editedJob)}`
       );
       startTransition(async () => await updateJob(editedJob));
-      setOpen((prev) => !prev);
+      if (!isPending) {
+        setOpen((prev) => !prev);
+      }
       // setAlertPop(true);
       // const timer = setTimeout(() => setAlertPop(false), 3000);
       // return () => clearTimeout(timer);
+    } else {
+      console.log(`Things are starting to heat down!`);
     }
   }
 
