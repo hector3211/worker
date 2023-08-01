@@ -12,8 +12,7 @@
 [x] - create many to many relations between jobs and users table
 [x] - add sent("created_at") column to job DateTable component
 [x] - add due_date to editbutton component
-
-[] - fix update job server function **hard**
+[x] - fix update job server function **hard**
 
 [] - set only admin can have the "+Add Job", "+Add User" button
 

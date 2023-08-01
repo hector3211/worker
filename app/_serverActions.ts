@@ -101,7 +101,7 @@ export async function updateJob(job: EditableJob) {
     console.log(`New emails to insert in DB! :${emailsToInsert}`);
     if (emailsToInsert && emailsToInsert.length > 0) {
       for (const email of emailsToInsert) {
-        const userToInsert = await getCutterInfo(email);
+        const userToInsert = await getUserInfo(email);
         if (userToInsert) {
           // inserting new emails(cutters) associated with selected job
           const newAddedUserToJob = await db
@@ -158,10 +158,10 @@ export async function getJobs(): Promise<JobData[] | undefined> {
       `GettingAllJobs functin failed! _serveractions file with error ${err}`
     );
   }
-  revalidatePath("/");
+  revalidateTag("jobdata");
 }
 
-export async function getCutterInfo(email: string): Promise<User | undefined> {
+export async function getUserInfo(email: string): Promise<User | undefined> {
   console.log(`getcutterINFO email: ${email}`);
   const user = await db.select().from(users).where(eq(users.email, email));
   return user[0];
@@ -190,7 +190,7 @@ export async function addNewJob(
     if (job.cutters) {
       for (const cutter of job.cutters) {
         // console.log(`current cutter name: ${cutter}\n`);
-        const cutterInfo = await getCutterInfo(cutter);
+        const cutterInfo = await getUserInfo(cutter);
         if (cutterInfo) {
           // console.log(`Got cutter ID⭐: ${cutterId}\n`);
           cutterList.push({

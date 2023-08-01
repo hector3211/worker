@@ -1,3 +1,5 @@
+import { getUserInfo } from "@/app/_serverActions";
+import { adminKey, adminSecret } from "@/utils/globalConsts";
 import NextAuth from "next-auth";
 import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
@@ -18,16 +20,23 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async session({ session, token, user }) {
+    async session({ session, token }) {
       if (token && session) {
-        session.user.role = token.userRole as string;
+        if (token.userRole) {
+          session.user.role = token.userRole as string;
+        }
       }
       return session;
     },
     async jwt({ token }) {
-      if (token && token.email === process.env.ADMIN_KEY) {
-        token.userRole = process.env.ADMIN_SECRET;
+      const currentUser = await getUserInfo(token.email || "");
+      if (token && currentUser) {
+        if (currentUser.email === adminKey) {
+          token.userRole = adminSecret;
+          return token;
+        }
       }
+
       return token;
     },
   },

@@ -48,20 +48,22 @@ export default function Nav() {
         </Popover>
       </div>
       <div className="hidden md:flex md:space-x-5 lg:space-x-4 md:items-center">
-        <div className="ml-4 space-x-1 lg:space-x-4">
+        <div className="flex ml-4 space-x-1 lg:space-x-4">
           <Link href={"/"}>
-            <Button variant={"ghost"} className="text-lg ">
-              Home
-            </Button>
+            <Button variant={"ghost"}>Home</Button>
           </Link>
-          {pathName === "/dashboard" ? (
-            <Button disabled className="text-lg">
-              Dashbaord
-            </Button>
-          ) : (
-            <Button className="text-lg">
-              <Link href={"/dashboard"}>Dashbaord</Link>
-            </Button>
+          {session?.user.role && (
+            <div>
+              {pathName === "/dashboard" ? (
+                <Button disabled className="text-lg">
+                  Dashbaord
+                </Button>
+              ) : (
+                <Button className="text-lg">
+                  <Link href={"/dashboard"}>Dashbaord</Link>
+                </Button>
+              )}
+            </div>
           )}
           <Button variant={"ghost"} className="text-md lg:text-lg">
             Team
