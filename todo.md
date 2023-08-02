@@ -13,17 +13,17 @@
 [x] - add sent("created_at") column to job DateTable component
 [x] - add due_date to editbutton component
 [x] - fix update job server function **hard**
+[x] - set only admin can have the "+Add Job", "+Add User" button
+[x] - set only admin can access dashboard route
 
-[] - set only admin can have the "+Add Job", "+Add User" button
+[] - make a sheet like component like a shadcn ui component
+instead of having a nav running along top of page for
+meduim size and larger screens
 
-[] - set only admin can access dashboard
+[] - finish UI for job/[id]/ page
 
-[] - clean up navbar
-
-[] - finish UI for job/[id]/
-
-[] - finish UI for users page
+[] - finish UI for users/[id]/ page
 
 [] - admin able to delete or add pictuers for a job (after form)
 
-[] - add "notes" column for jobs
+[] - admin able to delete whole jobs

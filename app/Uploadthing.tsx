@@ -34,7 +34,7 @@ export default function UploadThing() {
     <Dialog>
       <DialogTrigger asChild>
         <Button className="text-black" variant={"outline"}>
-          +Add Job
+          +Job
         </Button>
       </DialogTrigger>
       <DialogContent className="text-black">

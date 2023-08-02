@@ -7,8 +7,8 @@ import { Button } from "./ui/button";
 export function SignOut() {
   return (
     <Button
-      variant={"secondary"}
-      className="text-md rounded-md font-medium"
+      variant={"outline"}
+      className="w-full text-md rounded-md font-medium"
       onClick={() => signOut()}
     >
       Sign out
@@ -19,7 +19,7 @@ export function SignOut() {
 export function SignIn() {
   return (
     <Button
-      variant={"secondary"}
+      variant={"outline"}
       className="text-md rounded-md font-medium"
       onClick={() => signIn()}
     >
