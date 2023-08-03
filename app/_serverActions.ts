@@ -16,7 +16,7 @@ import {
   usersToJobs,
 } from "@/db/schema";
 import { adminKey, adminSecret } from "@/utils/globalConsts";
-import { and, between, eq, like, sql } from "drizzle-orm";
+import { SQL, and, between, eq, like, sql } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { utapi } from "uploadthing/server";
 
@@ -139,6 +139,35 @@ export async function getManyUsers() {
   } catch (err) {
     console.log(
       `getManyUsers function failed! _serveractions file with error ${err}`
+    );
+  }
+}
+
+export async function getUsersJobs(email: string) {
+  try {
+    const data = await db.query.jobs.findMany({
+      with: {
+        user: {
+          where: (users, { eq }) => eq(users.userEmail, email),
+        },
+      },
+    });
+    const dataNew = await db
+      .select()
+      .from(usersToJobs)
+      .where(eq(usersToJobs.userEmail, email));
+    const jobIds = dataNew.map((job) => {
+      return job.jobId;
+    });
+    let jobArr: Job[] = [];
+    for (const id of jobIds) {
+      const result = await db.select().from(jobs).where(eq(jobs.id, id));
+      jobArr.push(result[0]);
+    }
+    return jobArr;
+  } catch (err) {
+    console.log(
+      `getUsersJobs function failed! _serveractions file with error ${err}`
     );
   }
 }

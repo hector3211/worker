@@ -60,9 +60,11 @@ export default function Nav() {
               <Button variant={"ghost"} className="text-md">
                 Team
               </Button>
-              <Button variant={"ghost"} className="text-md">
-                Projects
-              </Button>
+              {session?.user.email && (
+                <Button variant={"ghost"} className="text-md">
+                  <Link href={`/user/${session.user.email}`}>Projects</Link>
+                </Button>
+              )}
               {session?.user.role && <UploadThing />}
               {session?.user.role && (
                 <div>
