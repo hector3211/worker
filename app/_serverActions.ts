@@ -5,7 +5,6 @@ import {
   EditableJob,
   Job,
   JobData,
-  JobsWithUsers,
   NewJobWithUser,
   NewUser,
   NewUsersToJob,
@@ -16,8 +15,8 @@ import {
   usersToJobs,
 } from "@/db/schema";
 import { adminKey, adminSecret } from "@/utils/globalConsts";
-import { SQL, and, between, eq, like, sql } from "drizzle-orm";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { and, between, eq, inArray, sql } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
 import { utapi } from "uploadthing/server";
 
 export async function utapiDelete(file: string): Promise<void> {
@@ -98,6 +97,7 @@ export async function updateJob(job: EditableJob) {
     const emailsToInsert = newEmails?.filter(
       (email) => !currentUserEmails.includes(email)
     );
+
     console.log(`New emails to insert in DB! :${emailsToInsert}`);
     if (emailsToInsert && emailsToInsert.length > 0) {
       for (const email of emailsToInsert) {
@@ -145,13 +145,6 @@ export async function getManyUsers() {
 
 export async function getUsersJobs(email: string) {
   try {
-    const data = await db.query.jobs.findMany({
-      with: {
-        user: {
-          where: (users, { eq }) => eq(users.userEmail, email),
-        },
-      },
-    });
     const dataNew = await db
       .select()
       .from(usersToJobs)
@@ -159,11 +152,7 @@ export async function getUsersJobs(email: string) {
     const jobIds = dataNew.map((job) => {
       return job.jobId;
     });
-    let jobArr: Job[] = [];
-    for (const id of jobIds) {
-      const result = await db.select().from(jobs).where(eq(jobs.id, id));
-      jobArr.push(result[0]);
-    }
+    const jobArr = await db.select().from(jobs).where(inArray(jobs.id, jobIds));
     return jobArr;
   } catch (err) {
     console.log(
@@ -191,7 +180,7 @@ export async function getJobs(): Promise<JobData[] | undefined> {
 }
 
 export async function getUserInfo(email: string): Promise<User | undefined> {
-  console.log(`getcutterINFO email: ${email}`);
+  // console.log(`getcutterINFO email: ${email}`);
   const user = await db.select().from(users).where(eq(users.email, email));
   return user[0];
 }

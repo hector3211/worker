@@ -47,23 +47,20 @@ export default function Nav() {
               {session?.user.role && (
                 <div>
                   {pathName === "/dashboard" ? (
-                    <Button disabled className="text-lg">
-                      Dashbaord
-                    </Button>
+                    <Button disabled>Dashbaord</Button>
                   ) : (
-                    <Button className="text-lg">
+                    <Button>
                       <Link href={"/dashboard"}>Dashbaord</Link>
                     </Button>
                   )}
                 </div>
               )}
-              <Button variant={"ghost"} className="text-md">
-                Team
-              </Button>
               {session?.user.email && (
-                <Button variant={"ghost"} className="text-md">
-                  <Link href={`/user/${session.user.email}`}>Projects</Link>
-                </Button>
+                <Link href={`/user`}>
+                  <Button variant={"ghost"} className="text-md">
+                    Projects
+                  </Button>
+                </Link>
               )}
               {session?.user.role && <UploadThing />}
               {session?.user.role && (
@@ -93,22 +90,33 @@ export default function Nav() {
           {session?.user.role && (
             <div>
               {pathName === "/dashboard" ? (
-                <Button disabled className="text-lg">
+                <Button className="md:text-lg" disabled>
                   Dashbaord
                 </Button>
               ) : (
-                <Button className="text-lg">
+                <Button variant={"ghost"} className="md:text-lg">
                   <Link href={"/dashboard"}>Dashbaord</Link>
                 </Button>
               )}
             </div>
           )}
-          <Button variant={"ghost"} className="text-md lg:text-lg">
-            Team
-          </Button>
-          <Button variant={"ghost"} className="text-md lg:text-lg">
-            Projects
-          </Button>
+          {session?.user.email && (
+            <div>
+              {pathName === "/user" ? (
+                <Link href={`/user`}>
+                  <Button disabled className="md:text-lg">
+                    Projects
+                  </Button>
+                </Link>
+              ) : (
+                <Link href={`/user`}>
+                  <Button variant={"ghost"} className="md:text-lg">
+                    Projects
+                  </Button>
+                </Link>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
