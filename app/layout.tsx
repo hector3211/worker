@@ -6,6 +6,7 @@ import AuthProvider from "./Provider";
 import MobileNavButton from "./components/Mobilenav";
 import QueryProvider from "./Queryprovider";
 import { Separator } from "./components/ui/separator";
+import Footer from "./components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,8 +26,8 @@ export default function RootLayout({
         <AuthProvider>
           <QueryProvider>
             <Nav />
-            <Separator />
             {children}
+            <Footer />
           </QueryProvider>
         </AuthProvider>
       </body>
