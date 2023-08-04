@@ -33,11 +33,9 @@ export default function UploadThing() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="text-black" variant={"outline"}>
-          +Job
-        </Button>
+        <Button className="md:text-lg">+Job</Button>
       </DialogTrigger>
-      <DialogContent className="text-black">
+      <DialogContent className="dark:bg-zinc-950">
         <DialogHeader>
           <DialogTitle>Add a job</DialogTitle>
           <DialogDescription>
@@ -78,15 +76,7 @@ export default function UploadThing() {
             </div>
           ))}
         </div>
-        {!showBtn && (
-          <Button
-            className="transition ease-in-out delay-75 hover:bg-blue-500 hover:translate-y-1 hover:scale-105"
-            variant={"outline"}
-            onClick={() => setShowBtn(true)}
-          >
-            Done
-          </Button>
-        )}
+        {!showBtn && <Button onClick={() => setShowBtn(true)}>Done</Button>}
         <Separator className="w-full" />
         {urlPaste.length > 0 && showBtn && <JobForm url={urlPaste} />}
       </DialogContent>

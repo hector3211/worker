@@ -19,7 +19,7 @@ export default async function Home() {
   const user = await getServerSession(authOptions);
 
   return (
-    <main className="relative">
+    <main className="relative my-5">
       {all && (
         <Suspense fallback={<p>Loading...</p>}>
           <DataTable columns={columns} data={all} />

@@ -54,9 +54,9 @@ export default function UserForm() {
     }
   }
   return (
-    <div className=" w-2/3 rounded-md p-3 outline outlne-white outline-2 bg-gradient-to-r from-gray-500 to-indigo-500">
+    <div className=" w-2/3 rounded-md p-3 outline outlne-white outline-2 bg-gradient-to-r from-gray-800 to-gray-200">
       <Form {...form}>
-        <Card className="drop-shadow-2xl">
+        <Card className="drop-shadow-2xl dark:bg-zinc-950">
           <CardHeader>
             <CardTitle>Regiester a user</CardTitle>
             <CardDescription>
@@ -72,7 +72,12 @@ export default function UserForm() {
                   <FormItem>
                     <FormLabel>Invoice</FormLabel>
                     <FormControl>
-                      <Input placeholder="John Doe" {...field} required />
+                      <Input
+                        className="dark:bg-zinc-950"
+                        placeholder="John Doe"
+                        {...field}
+                        required
+                      />
                     </FormControl>
                   </FormItem>
                 )}
@@ -85,6 +90,7 @@ export default function UserForm() {
                     <FormLabel>Invoice</FormLabel>
                     <FormControl>
                       <Input
+                        className="dark:bg-zinc-950"
                         placeholder="Johndoe@gmail.com"
                         {...field}
                         required
@@ -104,7 +110,10 @@ export default function UserForm() {
                         <SelectTrigger>
                           <SelectValue placeholder="Select Role" />
                         </SelectTrigger>
-                        <SelectContent position="popper">
+                        <SelectContent
+                          className="dark:bg-zinc-950"
+                          position="popper"
+                        >
                           <SelectItem value="Guest">Guest</SelectItem>
                           <SelectItem value="Cutter">Cutter</SelectItem>
                         </SelectContent>
@@ -113,7 +122,7 @@ export default function UserForm() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="mt-28 bg-blue-500 w-full">
+              <Button type="submit" className="mt-28 w-full">
                 Submit
               </Button>
             </form>

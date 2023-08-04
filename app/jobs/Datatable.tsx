@@ -17,7 +17,6 @@ import {
   TableRow,
 } from "../components/ui/table";
 import { Button } from "../components/ui/button";
-import { EditButton } from "../components/Editjobbutton";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -36,7 +35,10 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="container my-5 sm:max-w-4xl p-5 rounded-md borde lg:max-w-6xl py-10">
+    <div className="container bg-gray-300 text-black dark:bg-gray-900 dark:text-white sm:max-w-4xl p-5 rounded-md borde lg:max-w-6xl py-10">
+      <p className="mb-3 text-center text-2xl underline underline-offset-4">
+        All Jobs
+      </p>
       <div className="w-full rounded-md border">
         <Table>
           <TableHeader>
@@ -87,7 +89,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="text-black flex justify-end space-x-2 mt-3">
+      <div className=" flex justify-end space-x-2 mt-3">
         <Button
           variant="outline"
           size="sm"

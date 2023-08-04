@@ -178,12 +178,12 @@ export function EditButton({
   }
 
   return (
-    <div className="text-gray-500">
+    <div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button variant={"ghost"}>Edit</Button>
         </DialogTrigger>
-        <DialogContent className="text-black sm:max-w-[425px]">
+        <DialogContent className="dark:bg-zinc-950 sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Edit job {invoice}</DialogTitle>
             <DialogDescription>
@@ -204,6 +204,7 @@ export function EditButton({
                         <div className="flex items-center space-x-1">
                           <FormControl>
                             <Input
+                              className="dark:bg-zinc-950"
                               placeholder="Sink Modal"
                               {...field}
                               required
@@ -211,7 +212,6 @@ export function EditButton({
                           </FormControl>
                           <Button
                             type="button"
-                            variant="outline"
                             size="sm"
                             className="h-10"
                             onClick={() => sinkRemove(idx)}
@@ -225,7 +225,6 @@ export function EditButton({
                 ))}
                 <Button
                   type="button"
-                  variant="outline"
                   size="sm"
                   className="mt-1"
                   onClick={() => sinkAppend({ value: "" })}
@@ -245,6 +244,7 @@ export function EditButton({
                         <div className="flex items-center space-x-1">
                           <FormControl>
                             <Input
+                              className="dark:bg-zinc-950"
                               placeholder="Edge Profile"
                               {...field}
                               required
@@ -252,7 +252,6 @@ export function EditButton({
                           </FormControl>
                           <Button
                             type="button"
-                            variant="outline"
                             size="sm"
                             className="h-10"
                             onClick={() => edgeRemove(idx)}
@@ -266,7 +265,6 @@ export function EditButton({
                 ))}
                 <Button
                   type="button"
-                  variant="outline"
                   size="sm"
                   className="mt-1"
                   onClick={() => edgeAppend({ value: "" })}
@@ -281,7 +279,7 @@ export function EditButton({
                     key={field.id}
                     name={`cutterEmails.${idx}.email`}
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="mt-3">
                         <FormLabel>Cutter</FormLabel>
                         <div className="flex items-center space-x-1">
                           <FormControl className="text-black">
@@ -295,7 +293,10 @@ export function EditButton({
                                   placeholder={"Select cutter"}
                                 />
                               </SelectTrigger>
-                              <SelectContent position="popper">
+                              <SelectContent
+                                className="dark:bg-zinc-950"
+                                position="popper"
+                              >
                                 <SelectItem value="horopesa494@gmail.com">
                                   Hector
                                 </SelectItem>
@@ -310,7 +311,6 @@ export function EditButton({
                           </FormControl>
                           <Button
                             type="button"
-                            variant="outline"
                             size="sm"
                             className="h-10"
                             onClick={() => cutterRemove(idx)}
@@ -324,7 +324,6 @@ export function EditButton({
                 ))}
                 <Button
                   type="button"
-                  variant="outline"
                   size="sm"
                   className="mt-1"
                   onClick={() => cutterAppend({ email: "" })}
@@ -336,13 +335,12 @@ export function EditButton({
                 control={form.control}
                 name="dueDate"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
+                  <FormItem className="flex flex-col mt-3">
                     <FormLabel>Date of Installation</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant={"outline"}
                             className={cn(
                               "w-[240px] pl-3 text-left font-normal",
                               !field.value && "text-muted-foreground"
@@ -394,7 +392,7 @@ export function EditButton({
                 <Button
                   disabled={isPending}
                   type="submit"
-                  className="mt-5 bg-blue-500 w-full"
+                  className="mt-5 w-full"
                 >
                   Submit
                 </Button>

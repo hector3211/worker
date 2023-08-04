@@ -19,8 +19,7 @@ export function SignOut() {
 export function SignIn() {
   return (
     <Button
-      variant={"outline"}
-      className="text-md rounded-md font-medium"
+      className="dark:bg-white dark:text-black text-md rounded-md font-medium"
       onClick={() => signIn()}
     >
       Sign in

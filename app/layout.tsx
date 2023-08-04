@@ -3,10 +3,10 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import AuthProvider from "./Provider";
-import MobileNavButton from "./components/Mobilenav";
 import QueryProvider from "./Queryprovider";
-import { Separator } from "./components/ui/separator";
 import Footer from "./components/Footer";
+import { Providers } from "./Themeprovider";
+import { Separator } from "./components/ui/separator";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,14 +22,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={"max-h-screen max-w-full bg-zinc-950 text-white"}>
-        <AuthProvider>
-          <QueryProvider>
-            <Nav />
-            {children}
-            <Footer />
-          </QueryProvider>
-        </AuthProvider>
+      <body className={"max-h-screen max-w-full bg-gray-100 dark:bg-zinc-950"}>
+        <Providers>
+          <AuthProvider>
+            <QueryProvider>
+              <Nav />
+              <Separator />
+              {children}
+              <Footer />
+            </QueryProvider>
+          </AuthProvider>
+        </Providers>
       </body>
     </html>
   );

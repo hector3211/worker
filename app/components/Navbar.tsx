@@ -18,6 +18,7 @@ import {
 } from "./ui/card";
 import { Label } from "./ui/label";
 import { Separator } from "./ui/separator";
+import ThemeToggleButton from "./Themebutton";
 
 export default function Nav() {
   const { data: session } = useSession();
@@ -80,9 +81,9 @@ export default function Nav() {
         </Popover>
       </div>
       <div className="hidden md:flex md:space-x-5 lg:space-x-4 md:items-center">
-        <div className="flex ml-4 space-x-1 lg:space-x-4">
+        <div className="flex space-x-1 lg:space-x-4">
           <Link href={"/"}>
-            <Button variant={"ghost"} className="text-md lg:text-lg">
+            <Button variant={"ghost"} className="md:text-lg">
               Home
             </Button>
           </Link>
@@ -93,7 +94,7 @@ export default function Nav() {
                   Dashbaord
                 </Button>
               ) : (
-                <Button variant={"ghost"} className="md:text-lg">
+                <Button className="md:text-lg">
                   <Link href={"/dashboard"}>Dashbaord</Link>
                 </Button>
               )}
@@ -125,17 +126,18 @@ export default function Nav() {
           {session?.user.role && (
             <div>
               {pathName === "/register" ? (
-                <Button disabled>
+                <Button disabled className="md:text-lg">
                   <Link href={"/register"}>+Add User</Link>
                 </Button>
               ) : (
-                <Button>
+                <Button className="md:text-lg">
                   <Link href={"/register"}>+Add User</Link>
                 </Button>
               )}
             </div>
           )}
         </div>
+        <ThemeToggleButton />
         {session && (
           <Popover>
             <PopoverTrigger asChild>
@@ -148,7 +150,7 @@ export default function Nav() {
               </div>
             </PopoverTrigger>
             <PopoverContent className="mr-3 lg:mr-8">
-              <Card>
+              <Card className="dark:bg-zinc-950">
                 <CardHeader>
                   <div className="flex justify-between items-center">
                     <div className="flex flex-col">
