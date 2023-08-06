@@ -15,14 +15,9 @@
 [x] - fix update job server function **hard**
 [x] - set only admin can have the "+Add Job", "+Add User" button
 [x] - set only admin can access dashboard route
+[x] - finish UI for job page
 
-[] - make a sheet like component like a shadcn ui component
-instead of having a nav running along top of page for
-meduim size and larger screens
-
-[] - finish UI for job/[id]/ page
-
-[] - finish UI for users/[id]/ page
+[] - finish UI for user page
 
 [] - admin able to delete or add pictuers for a job (after form)
 

@@ -1,6 +1,5 @@
 "use client";
 
-import { utapi } from "uploadthing/server";
 import "@uploadthing/react/styles.css";
 import { UploadButton } from "../utils/uploadthing";
 import { useState } from "react";

@@ -19,6 +19,7 @@ import {
 import { Label } from "./ui/label";
 import { Separator } from "./ui/separator";
 import ThemeToggleButton from "./Themebutton";
+import { BsFillPersonFill } from "react-icons/bs";
 
 export default function Nav() {
   const { data: session } = useSession();
@@ -142,11 +143,7 @@ export default function Nav() {
           <Popover>
             <PopoverTrigger asChild>
               <div className="relative rounded-full">
-                <img
-                  src={`${session.user.image}`}
-                  alt="Image user"
-                  className="w-10 rounded-full hover:cursor-pointer transition ease-in-out delay-75 hover:bg-blue-500 hover:translate-y-[-1px] hover:scale-105"
-                />
+                <BsFillPersonFill className="w-10 text-4xl" />
               </div>
             </PopoverTrigger>
             <PopoverContent className="mr-3 lg:mr-8">

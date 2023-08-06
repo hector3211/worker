@@ -23,6 +23,21 @@ export async function utapiDelete(file: string): Promise<void> {
   await utapi.deleteFiles(file);
 }
 
+export async function getJob(id: number): Promise<JobData | undefined> {
+  try {
+    const job = await db.query.jobs.findFirst({
+      where: (jobs, { eq }) => eq(jobs.id, id),
+      with: {
+        user: true,
+      },
+    });
+    return job;
+  } catch (err) {
+    console.log(`GetJob function failed! dbactions file with error ${err}`);
+    revalidateTag(`job${id}`);
+  }
+}
+
 export async function getTodaysJobs(): Promise<Job[] | undefined> {
   try {
     const currDateTime = new Date();
@@ -32,13 +47,13 @@ export async function getTodaysJobs(): Promise<Job[] | undefined> {
       .select()
       .from(jobs)
       .where(between(jobs.created_at, todayAtSixeAm, currDateTime));
-
     return recentJobs as Job[];
   } catch (err) {
     console.log(
       `GetRecentJobs function failed! dbactions file with error ${err}`
     );
   }
+  revalidateTag("recentjobs");
 }
 export async function updateJob(job: EditableJob) {
   try {
@@ -159,6 +174,7 @@ export async function getUsersJobs(email: string) {
       `getUsersJobs function failed! _serveractions file with error ${err}`
     );
   }
+  revalidateTag("userjobs");
 }
 
 export async function getJobs(): Promise<JobData[] | undefined> {
