@@ -12,7 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/app/components/ui/label";
 import DoneButton from "../components/Markdonebutton";
 
@@ -25,9 +24,9 @@ export default async function UserProfile() {
   }
   const data = await getUsersJobs(currUser.user.email);
   return (
-    <main>
-      <div className="flex justify-center">
-        <ScrollArea className="max-h-screen w-full md:w-1/2 p-3">
+    <main className="relative">
+      <div className="flex justify-center h-[700px] md:h-[750px] lg:h-[800px]">
+        <ScrollArea className="w-full md:w-1/3 p-3">
           {data?.map((job) => (
             <Card
               key={job.id}

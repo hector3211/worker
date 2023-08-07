@@ -31,10 +31,10 @@ export async function getJob(id: number): Promise<JobData | undefined> {
         user: true,
       },
     });
+    revalidateTag(`job${id}`);
     return job;
   } catch (err) {
     console.log(`GetJob function failed! dbactions file with error ${err}`);
-    revalidateTag(`job${id}`);
   }
 }
 
@@ -47,14 +47,29 @@ export async function getTodaysJobs(): Promise<Job[] | undefined> {
       .select()
       .from(jobs)
       .where(between(jobs.created_at, todayAtSixeAm, currDateTime));
+    revalidateTag("recentjobs");
     return recentJobs as Job[];
   } catch (err) {
     console.log(
       `GetRecentJobs function failed! dbactions file with error ${err}`
     );
   }
-  revalidateTag("recentjobs");
 }
+
+export async function deleteJob(jobId: number): Promise<void | undefined> {
+  try {
+    const deletedJob = await db.delete(jobs).where(eq(jobs.id, jobId));
+    const deletedUserToJob = await db
+      .delete(usersToJobs)
+      .where(eq(usersToJobs.jobId, jobId));
+    if (deletedJob && deletedUserToJob) {
+      revalidateTag("jobdata");
+    }
+  } catch (err) {
+    console.log(`deleteJob function failed! dbactions file with error ${err}`);
+  }
+}
+
 export async function updateJob(job: EditableJob) {
   try {
     // updating selected job
@@ -168,13 +183,13 @@ export async function getUsersJobs(email: string) {
       return job.jobId;
     });
     const jobArr = await db.select().from(jobs).where(inArray(jobs.id, jobIds));
+    revalidateTag("userjobs");
     return jobArr;
   } catch (err) {
     console.log(
       `getUsersJobs function failed! _serveractions file with error ${err}`
     );
   }
-  revalidateTag("userjobs");
 }
 
 export async function getJobs(): Promise<JobData[] | undefined> {
@@ -192,7 +207,6 @@ export async function getJobs(): Promise<JobData[] | undefined> {
       `GettingAllJobs functin failed! _serveractions file with error ${err}`
     );
   }
-  revalidateTag("jobdata");
 }
 
 export async function getUserInfo(email: string): Promise<User | undefined> {

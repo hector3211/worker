@@ -35,7 +35,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="container bg-gray-300 text-black dark:bg-gray-900 dark:text-white sm:max-w-4xl p-5 rounded-md borde lg:max-w-6xl py-10">
+    <div className="container bg-gray-300 text-black dark:bg-gray-900 dark:text-white sm:max-w-4xl p-5 rounded-md border lg:max-w-6xl py-10">
       <p className="mb-3 text-center text-2xl underline underline-offset-4">
         All Jobs
       </p>

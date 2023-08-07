@@ -136,6 +136,7 @@ export function EditButton({
     control: form.control,
   });
   async function onSubmit(values: EditableJobForm) {
+    console.log("edit button got pressed");
     console.log(
       `EditJob Form Values for updating job step ONE: ${JSON.stringify(values)}`
     );
@@ -213,7 +214,7 @@ export function EditButton({
                           <Button
                             type="button"
                             size="sm"
-                            className="h-10"
+                            className="h-10 hover:bg-rose-400"
                             onClick={() => sinkRemove(idx)}
                           >
                             Delete
@@ -253,7 +254,7 @@ export function EditButton({
                           <Button
                             type="button"
                             size="sm"
-                            className="h-10"
+                            className="h-10 hover:bg-rose-400"
                             onClick={() => edgeRemove(idx)}
                           >
                             Delete
@@ -312,7 +313,7 @@ export function EditButton({
                           <Button
                             type="button"
                             size="sm"
-                            className="h-10"
+                            className="h-10 hover:bg-rose-400"
                             onClick={() => cutterRemove(idx)}
                           >
                             Delete

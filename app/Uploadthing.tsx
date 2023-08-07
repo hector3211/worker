@@ -32,7 +32,9 @@ export default function UploadThing() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="md:text-lg">+Job</Button>
+        <Button variant={"ghost"} className="md:text-lg dark:text-white">
+          +Job
+        </Button>
       </DialogTrigger>
       <DialogContent className="dark:bg-zinc-950">
         <DialogHeader>

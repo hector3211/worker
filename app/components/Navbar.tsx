@@ -91,11 +91,15 @@ export default function Nav() {
           {session?.user.role && (
             <div>
               {pathName === "/dashboard" ? (
-                <Button className="md:text-lg" disabled>
+                <Button
+                  variant={"ghost"}
+                  className="md:text-lg dark:text-white"
+                  disabled
+                >
                   Dashbaord
                 </Button>
               ) : (
-                <Button className="md:text-lg">
+                <Button variant={"ghost"} className="md:text-lg">
                   <Link href={"/dashboard"}>Dashbaord</Link>
                 </Button>
               )}
@@ -105,7 +109,11 @@ export default function Nav() {
             <div>
               {pathName === "/user" ? (
                 <Link href={`/user`}>
-                  <Button disabled className="md:text-lg">
+                  <Button
+                    disabled
+                    variant={"ghost"}
+                    className="md:text-lg dark:text-white"
+                  >
                     Projects
                   </Button>
                 </Link>
@@ -127,12 +135,19 @@ export default function Nav() {
           {session?.user.role && (
             <div>
               {pathName === "/register" ? (
-                <Button disabled className="md:text-lg">
-                  <Link href={"/register"}>+Add User</Link>
+                <Button
+                  variant={"ghost"}
+                  disabled
+                  className="md:text-lg dark:text-white"
+                >
+                  <Link href={"/register"}>+User</Link>
                 </Button>
               ) : (
-                <Button className="md:text-lg">
-                  <Link href={"/register"}>+Add User</Link>
+                <Button
+                  variant={"ghost"}
+                  className="md:text-lg dark:text-white"
+                >
+                  <Link href={"/register"}>+User</Link>
                 </Button>
               )}
             </div>
@@ -143,7 +158,9 @@ export default function Nav() {
           <Popover>
             <PopoverTrigger asChild>
               <div className="relative rounded-full">
-                <BsFillPersonFill className="w-10 text-4xl" />
+                <Button variant={"ghost"}>
+                  <BsFillPersonFill className="w-10 md:text-3xl dark:text-white" />
+                </Button>
               </div>
             </PopoverTrigger>
             <PopoverContent className="mr-3 lg:mr-8">

@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { EditButton } from "../components/Editjobbutton";
 import { Job, JobData } from "@/db/schema";
 import Link from "next/link";
+import DeleteButton from "../components/Deletebutton";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -77,10 +78,8 @@ export const columns: ColumnDef<JobData>[] = [
         myDate = new Date(mystring);
         // Split the date string into year, month, and day components
         const [yearStr, monthStr, dayStr] = mystring.split("-");
-
         // JavaScript's Date object uses 0-based month index, so we need to subtract 1 from the month
         const month = parseInt(monthStr, 10) - 1;
-
         // Create the Date object with the components
         myDate = new Date(parseInt(yearStr, 10), month, parseInt(dayStr, 10));
       } else {
@@ -98,6 +97,15 @@ export const columns: ColumnDef<JobData>[] = [
           dueDate={myDate}
         />
       );
+    },
+  },
+  {
+    id: "actions",
+    enableHiding: true,
+    cell: ({ row }) => {
+      const id = row.original.id;
+
+      return <DeleteButton jobId={id} />;
     },
   },
 ];
