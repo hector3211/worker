@@ -73,14 +73,14 @@ export default async function JobHome({ params: { id } }: PageProps) {
                   <Label className="font-meduim  underline underline-offset-2 text-md">
                     Cutters
                   </Label>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col text-center">
                     {job &&
                       job.user?.map((user, idx) => (
-                        <p key={idx}>{user.userName}</p>
+                        <p key={idx}>{user.userName.split(" ")[0]}</p>
                       ))}
                   </div>
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col text-center">
                   <Label className="font-medium underline underline-offset-2 text-md">
                     Sent
                   </Label>
@@ -88,7 +88,7 @@ export default async function JobHome({ params: { id } }: PageProps) {
                     {job?.created_at.toISOString().slice(0, 10)}
                   </p>
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col text-center">
                   <Label className="font-meduim underline underline-offset-2 text-md">
                     Due
                   </Label>

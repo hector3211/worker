@@ -38,7 +38,7 @@ export const columns: ColumnDef<JobData>[] = [
       return (
         <div className="flex flex-col ml-3">
           {results.map((cutter, idx) => (
-            <p key={idx}>{cutter.userName}</p>
+            <p key={idx}>{cutter.userName.split(" ")[0]}</p>
           ))}
         </div>
       );
@@ -65,7 +65,7 @@ export const columns: ColumnDef<JobData>[] = [
     header: "Due_Date",
   },
   {
-    id: "actions",
+    id: "editActions",
     enableHiding: true,
     cell: ({ row }) => {
       const job = row.original;
@@ -100,12 +100,16 @@ export const columns: ColumnDef<JobData>[] = [
     },
   },
   {
-    id: "actions",
+    id: "deleteActions",
     enableHiding: true,
     cell: ({ row }) => {
-      const id = row.original.id;
+      const job = row.original;
 
-      return <DeleteButton jobId={id} />;
+      return (
+        <div key={job.id}>
+          <DeleteButton jobInvoice={job.invoice} jobId={job.id} />
+        </div>
+      );
     },
   },
 ];

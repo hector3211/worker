@@ -22,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={"min-h-screen max-w-full bg-gray-100 dark:bg-zinc-950"}>
+      <body className={" min-h-screen max-w-full bg-gray-100 dark:bg-zinc-950"}>
         <Providers>
           <AuthProvider>
             <QueryProvider>

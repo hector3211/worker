@@ -58,10 +58,10 @@ export async function getTodaysJobs(): Promise<Job[] | undefined> {
 
 export async function deleteJob(jobId: number): Promise<void | undefined> {
   try {
-    const deletedJob = await db.delete(jobs).where(eq(jobs.id, jobId));
     const deletedUserToJob = await db
       .delete(usersToJobs)
       .where(eq(usersToJobs.jobId, jobId));
+    const deletedJob = await db.delete(jobs).where(eq(jobs.id, jobId));
     if (deletedJob && deletedUserToJob) {
       revalidateTag("jobdata");
     }
@@ -225,7 +225,7 @@ export async function getUserInfo(email: string): Promise<User | undefined> {
 
 export async function addNewJob(
   job: NewJobWithUser
-): Promise<UsersToJob | undefined> {
+): Promise<void | undefined> {
   // console.log(`job object getting passed down: ${JSON.stringify(job)}\n`);
   try {
     const newJob = await db
@@ -256,13 +256,9 @@ export async function addNewJob(
       }
     }
 
-    const newUserToJob = await db
-      .insert(usersToJobs)
-      .values(cutterList)
-      .returning();
+    const newUserToJob = await db.insert(usersToJobs).values(cutterList);
 
     console.log(`NEW JOB ADDED✅:${newUserToJob}\n`);
-    return newUserToJob[0];
   } catch (err) {
     console.log(
       `InsertNewJob functin failed! _serveractions file with error ${err}`

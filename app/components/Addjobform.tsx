@@ -31,14 +31,19 @@ import {
   FormLabel,
   FormMessage,
 } from "./ui/form";
-import { addNewJob } from "../_serverActions";
+import { addNewJob, utapiDelete } from "../_serverActions";
 import { AlertPop } from "./Alertpopup";
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 import { JobsWithUsers, NewJobWithUser, jobs } from "@/db/schema";
-
-type JobFormProps = {
-  url: string[];
-};
+import { UploadButton } from "@/utils/uploadthing";
+import { Separator } from "./ui/separator";
 
 const formSchema = z.object({
   job: z.object({
@@ -61,11 +66,13 @@ const formSchema = z.object({
 
 export type JobForm = z.infer<typeof formSchema>;
 
-export default function JobForm({ url }: JobFormProps) {
-  const [date, setDate] = useState<Date>();
-  const [alertPop, setAlertPop] = useState<true | false>(false);
-  const [invoiceNum, setInvoiceNum] = useState<string>("");
+export default function JobForm() {
+  const [urlPaste, setUrlPaste] = useState<string[]>([]);
+  const [fileKeys, setFileKeys] = useState<string[]>([]);
+  const [showBtn, setShowBtn] = useState<true | false>(false);
+  const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [errMsg, setErrMsg] = useState<string | null>(null);
   const form = useForm<JobForm>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -73,7 +80,6 @@ export default function JobForm({ url }: JobFormProps) {
         invoice: "",
         sinks: [{ value: "pl-250" }],
         edges: [{ value: "flat" }],
-        picture: url,
       },
       cutters: [{ email: "" }],
     },
@@ -121,6 +127,7 @@ export default function JobForm({ url }: JobFormProps) {
         invoice: values.job.invoice,
         sink: sinkArr,
         edge: edgeArr,
+        pictures: values.job.picture,
         due_date: values.job.dueDate.toISOString().slice(0, 10),
       },
       cutters: cutterArr,
@@ -128,206 +135,283 @@ export default function JobForm({ url }: JobFormProps) {
 
     console.log(`Add JobForm values: ${JSON.stringify(newJob)}`);
 
-    await addNewJob(newJob);
-    setInvoiceNum(values.job.invoice);
-    setAlertPop((prev) => !prev);
-    setTimeout(() => {
-      setAlertPop((prev) => !prev);
-      setInvoiceNum("");
-    }, 3000);
+    startTransition(async () => await addNewJob(newJob));
+    if (!isPending) {
+      setOpen((prev) => !prev);
+      // form.setValue("cutters", []);
+      // form.setValue("job.sinks", [{ value: "pl-250" }]);
+      // form.setValue("job.edges", [{ value: "flat" }]);
+      // form.setValue("job.picture", []);
+      // form.setValue("job.invoice", "");
+    }
+  }
+  async function deletePic(idx: number) {
+    const toDelete = fileKeys[idx];
+    const urlSelected = urlPaste[idx];
+    await utapiDelete(toDelete);
+    setUrlPaste((prev) => {
+      return prev.filter((pic) => pic !== urlSelected);
+    });
   }
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <FormField
-          control={form.control}
-          name="job.invoice"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Invoice</FormLabel>
-              <FormControl>
-                <Input placeholder="Invoice Number" {...field} required />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <div>
-          {sinkField.map((field, idx) => (
-            <FormField
-              control={form.control}
-              key={field.id}
-              name={`job.sinks.${idx}.value`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Sink</FormLabel>
-                  <div className="flex items-center space-x-1">
-                    <FormControl>
-                      <Input placeholder="Sink Modal" {...field} required />
-                    </FormControl>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="h-10 hover:bg-rose-300"
-                      onClick={() => sinkRemove(idx)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </FormItem>
-              )}
-            />
-          ))}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="mt-1"
-            onClick={() => sinkAppend({ value: "" })}
-          >
-            Add Sink
-          </Button>
-        </div>
-        <div>
-          {edgeField.map((field, idx) => (
-            <FormField
-              control={form.control}
-              key={field.id}
-              name={`job.edges.${idx}.value`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Edge</FormLabel>
-                  <div className="flex items-center space-x-1">
-                    <FormControl>
-                      <Input placeholder="Edge Profile" {...field} required />
-                    </FormControl>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="h-10 hover:bg-rose-300"
-                      onClick={() => edgeRemove(idx)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </FormItem>
-              )}
-            />
-          ))}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="mt-1"
-            onClick={() => edgeAppend({ value: "" })}
-          >
-            Add Edge
-          </Button>
-        </div>
-        <div>
-          {cutterField.map((field, idx) => (
-            <FormField
-              control={form.control}
-              key={field.id}
-              name={`cutters.${idx}.email`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cutter</FormLabel>
-                  <div className="flex items-center space-x-1">
-                    <FormControl>
-                      <Select onValueChange={field.onChange}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Cutter" />
-                        </SelectTrigger>
-                        <SelectContent position="popper">
-                          <SelectItem value="horopesa494@gmail.com">
-                            Hector
-                          </SelectItem>
-                          <SelectItem value="carlos@ymail.com">
-                            Carlos
-                          </SelectItem>
-                          <SelectItem value="robert@ymail.com">
-                            Robert
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="h-10 hover:bg-rose-300"
-                      onClick={() => cutterRemove(idx)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </FormItem>
-              )}
-            />
-          ))}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="mt-1"
-            onClick={() => cutterAppend({ email: "" })}
-          >
-            Add Cutter
-          </Button>
-        </div>
-        <FormField
-          control={form.control}
-          name="job.dueDate"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Date of birth</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormDescription>
-                Your date of birth is used to calculate your age.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="mt-5 bg-blue-500 w-full">
-          Submit
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          variant={"ghost"}
+          className="text-lg hover:bg-gray-300 hover:dark:bg-gray-900 dark:text-white"
+        >
+          +Job
         </Button>
-      </form>
-      {alertPop && (
-        <AlertPop
-          invoice={invoiceNum}
-          message={"Successfully uploaded new job!"}
+      </DialogTrigger>
+      <DialogContent className="dark:bg-zinc-950">
+        <DialogHeader>
+          <DialogTitle>Add a job</DialogTitle>
+          <DialogDescription>
+            Please add all pictures for a job before moving foward
+          </DialogDescription>
+        </DialogHeader>
+        <UploadButton
+          endpoint="imageUploader"
+          onClientUploadComplete={(res) => {
+            // Do something with the response
+            console.log("Files: ", res);
+            if (res) {
+              // alert(`Upload Completed Please Copy URL: ${res[0].fileUrl}`);
+              setUrlPaste([...urlPaste, res[0].fileUrl]);
+              setFileKeys([...fileKeys, res[0].fileKey]);
+              form.setValue("job.picture", [...urlPaste, res[0].fileUrl]);
+            }
+          }}
+          onUploadError={(error: Error) => {
+            // Do something with the error.
+            // alert(`ERROR!: Not Signed Authorized!`);
+            setErrMsg(
+              `Sorry something went wrong! feature will be back shortly`
+            );
+            console.log(`Current uploadthing error in button: ${error}`);
+          }}
         />
-      )}
-    </Form>
+        <div className="flex flex-shrink justify-center items-center space-x-1">
+          {urlPaste.map((pic, idx) => (
+            <div key={idx} className="relative">
+              <img
+                src={`${pic}`}
+                alt="Job picture"
+                className="rounded-md w-[120px] h-[70px]"
+              />
+              <Button
+                variant={"secondary"}
+                className="absolute top-1 right-1 text-xs p-2 h-2 w-2 transition ease-in-out delay-75 hover:bg-red-500 hover:-translate-y-1 hover:scale-105"
+                onClick={() => deletePic(idx)}
+              >
+                X
+              </Button>
+            </div>
+          ))}
+        </div>
+        {!showBtn && !errMsg && (
+          <Button onClick={() => setShowBtn(true)}>Done</Button>
+        )}
+        {errMsg && <p className="text-rose-400 text-md">{errMsg}</p>}
+        <Separator className="w-full" />
+        {urlPaste.length > 0 && showBtn && (
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                control={form.control}
+                name="job.invoice"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Invoice</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Invoice Number" {...field} required />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <div>
+                {sinkField.map((field, idx) => (
+                  <FormField
+                    control={form.control}
+                    key={field.id}
+                    name={`job.sinks.${idx}.value`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Sink</FormLabel>
+                        <div className="flex items-center space-x-1">
+                          <FormControl>
+                            <Input
+                              placeholder="Sink Modal"
+                              {...field}
+                              required
+                            />
+                          </FormControl>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-10 hover:bg-rose-300"
+                            onClick={() => sinkRemove(idx)}
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-1"
+                  onClick={() => sinkAppend({ value: "" })}
+                >
+                  Add Sink
+                </Button>
+              </div>
+              <div>
+                {edgeField.map((field, idx) => (
+                  <FormField
+                    control={form.control}
+                    key={field.id}
+                    name={`job.edges.${idx}.value`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Edge</FormLabel>
+                        <div className="flex items-center space-x-1">
+                          <FormControl>
+                            <Input
+                              placeholder="Edge Profile"
+                              {...field}
+                              required
+                            />
+                          </FormControl>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-10 hover:bg-rose-300"
+                            onClick={() => edgeRemove(idx)}
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-1"
+                  onClick={() => edgeAppend({ value: "" })}
+                >
+                  Add Edge
+                </Button>
+              </div>
+              <div>
+                {cutterField.map((field, idx) => (
+                  <FormField
+                    control={form.control}
+                    key={field.id}
+                    name={`cutters.${idx}.email`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Cutter</FormLabel>
+                        <div className="flex items-center space-x-1">
+                          <FormControl>
+                            <Select onValueChange={field.onChange} required>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Cutter" />
+                              </SelectTrigger>
+                              <SelectContent position="popper">
+                                <SelectItem value="horopesa494@gmail.com">
+                                  Hector
+                                </SelectItem>
+                                <SelectItem value="carlos@ymail.com">
+                                  Carlos
+                                </SelectItem>
+                                <SelectItem value="robert@ymail.com">
+                                  Robert
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-10 hover:bg-rose-300"
+                            onClick={() => cutterRemove(idx)}
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-1"
+                  onClick={() => cutterAppend({ email: "" })}
+                >
+                  Add Cutter
+                </Button>
+              </div>
+              <FormField
+                control={form.control}
+                name="job.dueDate"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Date of birth</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-[240px] pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormDescription>
+                      Your date of birth is used to calculate your age.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="mt-5 bg-blue-500 w-full">
+                Submit
+              </Button>
+              {errMsg && <p className="text-rose-400">Something went wrong</p>}
+            </form>
+          </Form>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }

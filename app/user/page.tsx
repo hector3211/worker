@@ -1,4 +1,5 @@
 import { IoWarningOutline } from "react-icons/io5";
+import { AiOutlinePicture } from "react-icons/ai";
 import { getUsersJobs } from "@/app/_serverActions";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -14,6 +15,8 @@ import {
 } from "@/app/components/ui/card";
 import { Label } from "@/app/components/ui/label";
 import DoneButton from "../components/Markdonebutton";
+import { Separator } from "../components/ui/separator";
+import Link from "next/link";
 
 export default async function UserProfile() {
   const currUser = await getServerSession(authOptions);
@@ -26,7 +29,7 @@ export default async function UserProfile() {
   return (
     <main className="relative">
       <div className="flex justify-center h-[700px] md:h-[750px] lg:h-[800px]">
-        <ScrollArea className="w-full md:w-1/3 p-3">
+        <ScrollArea className="w-full md:w-1/2 lg:w-1/3 p-3">
           {data?.map((job) => (
             <Card
               key={job.id}
@@ -34,30 +37,39 @@ export default async function UserProfile() {
             >
               <CardHeader>
                 <CardTitle>
-                  Invoice {job.invoice} with JobId: {job.id}
+                  <div className="flex space-x-1">
+                    <p className="font-normal">Invoice</p>
+                    <p>#{job.invoice}</p>
+                  </div>
                 </CardTitle>
                 <CardDescription>Job attributes</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col">
                   {job.pictures && job.pictures?.length > 0 ? (
-                    <div className="flex flex-col">
+                    <div className="flex overflow-x-auto max-w-full p-4 space-x-2 rounded-md ">
                       {job.pictures?.map((pic, idx) => (
-                        <img
-                          key={idx}
-                          src={`${pic}`}
-                          alt={`Picture ${idx} of job`}
-                          className="w-[150px]"
-                        />
+                        <Link
+                          className="min-w-fit shadow-2xl"
+                          href={`${pic}`}
+                          target="_blank"
+                        >
+                          <img
+                            key={idx}
+                            src={`${pic}`}
+                            alt={`Picture ${idx} of job`}
+                            className="h-full rounded-md"
+                          />
+                        </Link>
                       ))}
                     </div>
                   ) : (
-                    <div className="h-[180px] flex space-x-2 justify-center items-center bg-gray-700 rounded-md">
-                      <IoWarningOutline className="animate-pulse text-orange-500 md:text-2xl" />
+                    <div className="h-[180px] flex flex-col space-x-2 justify-center items-center bg-gray-700 rounded-md">
+                      <AiOutlinePicture className="animate-pulse bg-cover text-8xl" />
                       <p className="text-rose-500">No Pictues Provided</p>
                     </div>
                   )}
-                  <div className="flex mt-5 justify-evenly items-center">
+                  <div className="flex mt-5 justify-evenly items-start">
                     {job.sink && job.sink.length > 0 && (
                       <div className="flex flex-col">
                         <Label className="font-medium text-lg">Sinks</Label>

@@ -16,9 +16,11 @@
 [x] - set only admin can have the "+Add Job", "+Add User" button
 [x] - set only admin can access dashboard route
 [x] - finish UI for job page
+[x] - admin able to delete whole jobs
+[x] - finish UI for user page
 
-[] - finish UI for user page
+[] - add a toast to comfirm completion of job for cutter page
+
+[] - add a toast to comfirm deletion of job on data table
 
 [] - admin able to delete or add pictuers for a job (after form)
-
-[] - admin able to delete whole jobs

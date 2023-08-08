@@ -14,13 +14,17 @@ export default function ThemeToggleButton() {
   return (
     <div>
       {theme === "light" ? (
-        <Button variant={"ghost"} onClick={() => setTheme("dark")}>
+        <Button
+          className="hover:bg-gray-300"
+          variant={"ghost"}
+          onClick={() => setTheme("dark")}
+        >
           <BsFillMoonFill />
         </Button>
       ) : (
         <Button
           variant={"ghost"}
-          className="dark:text-white text-lg"
+          className="dark:text-white text-lg hover:dark:bg-gray-900"
           onClick={() => setTheme("light")}
         >
           <BsSunFill />

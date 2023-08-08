@@ -20,6 +20,7 @@ import { Label } from "./ui/label";
 import { Separator } from "./ui/separator";
 import ThemeToggleButton from "./Themebutton";
 import { BsFillPersonFill } from "react-icons/bs";
+import JobForm from "./Addjobform";
 
 export default function Nav() {
   const { data: session } = useSession();
@@ -63,7 +64,7 @@ export default function Nav() {
                   </Button>
                 </Link>
               )}
-              {session?.user.role && <UploadThing />}
+              {session?.user.role && <JobForm />}
               {session?.user.role && (
                 <div>
                   {pathName === "/register" ? (
@@ -84,7 +85,10 @@ export default function Nav() {
       <div className="hidden md:flex md:space-x-5 lg:space-x-4 md:items-center">
         <div className="flex space-x-1 lg:space-x-4">
           <Link href={"/"}>
-            <Button variant={"ghost"} className="md:text-lg">
+            <Button
+              variant={"ghost"}
+              className="text-lg hover:bg-gray-300 hover:dark:bg-gray-900"
+            >
               Home
             </Button>
           </Link>
@@ -99,7 +103,10 @@ export default function Nav() {
                   Dashbaord
                 </Button>
               ) : (
-                <Button variant={"ghost"} className="md:text-lg">
+                <Button
+                  variant={"ghost"}
+                  className="text-lg hover:bg-gray-300 hover:dark:bg-gray-900"
+                >
                   <Link href={"/dashboard"}>Dashbaord</Link>
                 </Button>
               )}
@@ -119,7 +126,10 @@ export default function Nav() {
                 </Link>
               ) : (
                 <Link href={`/user`}>
-                  <Button variant={"ghost"} className="md:text-lg">
+                  <Button
+                    variant={"ghost"}
+                    className="text-lg hover:bg-gray-300 hover:dark:bg-gray-900"
+                  >
                     Projects
                   </Button>
                 </Link>
@@ -131,7 +141,7 @@ export default function Nav() {
 
       <div className="flex items-center space-x-1 text-black">
         <div className="hidden md:flex md:space-x-1">
-          {session?.user.role && <UploadThing />}
+          {session?.user.role && <JobForm />}
           {session?.user.role && (
             <div>
               {pathName === "/register" ? (
@@ -145,7 +155,7 @@ export default function Nav() {
               ) : (
                 <Button
                   variant={"ghost"}
-                  className="md:text-lg dark:text-white"
+                  className="text-lg hover:bg-gray-300 hover:dark:bg-gray-900 dark:text-white"
                 >
                   <Link href={"/register"}>+User</Link>
                 </Button>
@@ -158,8 +168,11 @@ export default function Nav() {
           <Popover>
             <PopoverTrigger asChild>
               <div className="relative rounded-full">
-                <Button variant={"ghost"}>
-                  <BsFillPersonFill className="w-10 md:text-3xl dark:text-white" />
+                <Button
+                  variant={"ghost"}
+                  className="hover:bg-gray-300 hover:dark:bg-gray-900"
+                >
+                  <BsFillPersonFill className="w-10 md:text-3xl  dark:text-white" />
                 </Button>
               </div>
             </PopoverTrigger>
