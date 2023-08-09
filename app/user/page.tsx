@@ -27,8 +27,8 @@ export default async function UserProfile() {
   }
   const data = await getUsersJobs(currUser.user.email);
   return (
-    <main className="relative">
-      <div className="flex justify-center h-[700px] md:h-[750px] lg:h-[800px]">
+    <main className="py-5">
+      <div className="flex justify-center h-[720px] md:h-[750px] lg:h-[800px]">
         <ScrollArea className="w-full md:w-1/2 lg:w-1/3 p-3">
           {data?.map((job) => (
             <Card
@@ -50,7 +50,7 @@ export default async function UserProfile() {
                     <div className="flex overflow-x-auto max-w-full p-4 space-x-2 rounded-md ">
                       {job.pictures?.map((pic, idx) => (
                         <Link
-                          className="min-w-fit shadow-2xl"
+                          className="min-w-fit h-[180px] shadow-2xl"
                           href={`${pic}`}
                           target="_blank"
                         >

@@ -22,6 +22,114 @@ import ThemeToggleButton from "./Themebutton";
 import { BsFillPersonFill } from "react-icons/bs";
 import JobForm from "./Addjobform";
 
+function MobileNav() {
+  const { data: session } = useSession();
+  const pathName = usePathname();
+  return (
+    <div className="md:hidden">
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant={"ghost"} className="text-lg lg:text-4xl font-medium">
+            Menu
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-40 ml-5">
+          <div className="flex flex-col items-start">
+            <Link href={"/"}>
+              <Button variant={"ghost"} className="text-md">
+                Home
+              </Button>
+            </Link>
+            {session?.user.role && (
+              <div>
+                {pathName === "/dashboard" ? (
+                  <Button disabled>Dashboard</Button>
+                ) : (
+                  <Link href={"/dashboard"}>
+                    <Button variant={"ghost"} className="text-md">
+                      Dashboard
+                    </Button>
+                  </Link>
+                )}
+              </div>
+            )}
+            {session?.user.email && (
+              <Link href={`/user`}>
+                <Button variant={"ghost"} className="text-md">
+                  Projects
+                </Button>
+              </Link>
+            )}
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}
+
+function StandardNav() {
+  const { data: session } = useSession();
+  const pathName = usePathname();
+  return (
+    <div className="hidden md:flex md:space-x-5 lg:space-x-4 md:items-center">
+      <div className="flex space-x-1 lg:space-x-4">
+        <Link href={"/"}>
+          <Button
+            variant={"ghost"}
+            className="text-lg hover:bg-gray-300 hover:dark:bg-gray-900"
+          >
+            Home
+          </Button>
+        </Link>
+        {session?.user.role && (
+          <div>
+            {pathName === "/dashboard" ? (
+              <Button
+                variant={"ghost"}
+                className="md:text-lg dark:text-white"
+                disabled
+              >
+                Dashboard
+              </Button>
+            ) : (
+              <Button
+                variant={"ghost"}
+                className="text-lg hover:bg-gray-300 hover:dark:bg-gray-900"
+              >
+                <Link href={"/dashboard"}>Dashboard</Link>
+              </Button>
+            )}
+          </div>
+        )}
+        {session?.user.email && (
+          <>
+            {pathName === "/user" ? (
+              <Link href={`/user`}>
+                <Button
+                  disabled
+                  variant={"ghost"}
+                  className="md:text-lg dark:text-white"
+                >
+                  Projects
+                </Button>
+              </Link>
+            ) : (
+              <Link href={`/user`}>
+                <Button
+                  variant={"ghost"}
+                  className="text-lg hover:bg-gray-300 hover:dark:bg-gray-900"
+                >
+                  Projects
+                </Button>
+              </Link>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Nav() {
   const { data: session } = useSession();
   const pathName = usePathname();
@@ -29,121 +137,13 @@ export default function Nav() {
 
   return (
     <div className={`flex  justify-between items-center px-5 lg:px-8 py-3`}>
-      <div className="md:hidden">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant={"ghost"}
-              className="text-lg lg:text-4xl font-medium"
-            >
-              Menu
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-40 ml-5">
-            <div className="flex flex-col items-start">
-              <Link href={"/"}>
-                <Button variant={"ghost"} className="text-md">
-                  Home
-                </Button>
-              </Link>
-              {session?.user.role && (
-                <div>
-                  {pathName === "/dashboard" ? (
-                    <Button disabled>Dashbaord</Button>
-                  ) : (
-                    <Button>
-                      <Link href={"/dashboard"}>Dashbaord</Link>
-                    </Button>
-                  )}
-                </div>
-              )}
-              {session?.user.email && (
-                <Link href={`/user`}>
-                  <Button variant={"ghost"} className="text-md">
-                    Projects
-                  </Button>
-                </Link>
-              )}
-              {session?.user.role && <JobForm />}
-              {session?.user.role && (
-                <div>
-                  {pathName === "/register" ? (
-                    <Button disabled>
-                      <Link href={"/register"}>+Add User</Link>
-                    </Button>
-                  ) : (
-                    <Button>
-                      <Link href={"/register"}>+Add User</Link>
-                    </Button>
-                  )}
-                </div>
-              )}
-            </div>
-          </PopoverContent>
-        </Popover>
-      </div>
-      <div className="hidden md:flex md:space-x-5 lg:space-x-4 md:items-center">
-        <div className="flex space-x-1 lg:space-x-4">
-          <Link href={"/"}>
-            <Button
-              variant={"ghost"}
-              className="text-lg hover:bg-gray-300 hover:dark:bg-gray-900"
-            >
-              Home
-            </Button>
-          </Link>
-          {session?.user.role && (
-            <div>
-              {pathName === "/dashboard" ? (
-                <Button
-                  variant={"ghost"}
-                  className="md:text-lg dark:text-white"
-                  disabled
-                >
-                  Dashbaord
-                </Button>
-              ) : (
-                <Button
-                  variant={"ghost"}
-                  className="text-lg hover:bg-gray-300 hover:dark:bg-gray-900"
-                >
-                  <Link href={"/dashboard"}>Dashbaord</Link>
-                </Button>
-              )}
-            </div>
-          )}
-          {session?.user.email && (
-            <div>
-              {pathName === "/user" ? (
-                <Link href={`/user`}>
-                  <Button
-                    disabled
-                    variant={"ghost"}
-                    className="md:text-lg dark:text-white"
-                  >
-                    Projects
-                  </Button>
-                </Link>
-              ) : (
-                <Link href={`/user`}>
-                  <Button
-                    variant={"ghost"}
-                    className="text-lg hover:bg-gray-300 hover:dark:bg-gray-900"
-                  >
-                    Projects
-                  </Button>
-                </Link>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-
+      <MobileNav />
+      <StandardNav />
       <div className="flex items-center space-x-1 text-black">
         <div className="hidden md:flex md:space-x-1">
           {session?.user.role && <JobForm />}
           {session?.user.role && (
-            <div>
+            <>
               {pathName === "/register" ? (
                 <Button
                   variant={"ghost"}
@@ -160,23 +160,21 @@ export default function Nav() {
                   <Link href={"/register"}>+User</Link>
                 </Button>
               )}
-            </div>
+            </>
           )}
         </div>
         <ThemeToggleButton />
         {session && (
           <Popover>
             <PopoverTrigger asChild>
-              <div className="relative rounded-full">
-                <Button
-                  variant={"ghost"}
-                  className="hover:bg-gray-300 hover:dark:bg-gray-900"
-                >
-                  <BsFillPersonFill className="w-10 md:text-3xl  dark:text-white" />
-                </Button>
-              </div>
+              <Button
+                variant={"ghost"}
+                className="hover:bg-gray-300 hover:dark:bg-gray-900"
+              >
+                <BsFillPersonFill className="w-5 text-lg md:w-10 md:text-2xl  dark:text-white" />
+              </Button>
             </PopoverTrigger>
-            <PopoverContent className="mr-3 lg:mr-8">
+            <PopoverContent className="dark:bg-zinc-950 mr-3 lg:mr-8">
               <Card className="dark:bg-zinc-950">
                 <CardHeader>
                   <div className="flex justify-between items-center">
@@ -216,17 +214,17 @@ export default function Nav() {
                     <div className="flex flex-col space-y-1 md:hidden">
                       {session.user.role && <UploadThing />}
                       {session?.user.role && (
-                        <div>
+                        <>
                           {pathName === "/register" ? (
                             <Button disabled className="w-full">
                               <Link href={"/register"}>+User</Link>
                             </Button>
                           ) : (
-                            <Button variant={"outline"} className="w-full">
+                            <Button variant={"ghost"} className="w-full">
                               <Link href={"/register"}>+User</Link>
                             </Button>
                           )}
-                        </div>
+                        </>
                       )}
                     </div>
                     <Separator />

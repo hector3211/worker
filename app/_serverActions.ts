@@ -1,5 +1,6 @@
 "use server";
 
+import { Resend } from "resend";
 import { db } from "@/db";
 import {
   EditableJob,
@@ -128,6 +129,16 @@ export async function updateJob(job: EditableJob) {
       (email) => !currentUserEmails.includes(email)
     );
 
+    // const resend = new Resend(process.env.RESEND_API_KEY);
+    // const data = await resend.emails.send({
+    //   from: "Acme <onboarding@resend.dev>",
+    //   to: ["hectororopesa5@gmail.com"],
+    //   subject: "Hello world",
+    //   text: `Hello you got assigned to jobId: ${job.id}, Invoice: ${job.invoice}`,
+    // });
+    // if (data) {
+    //   console.log(`sent email ✉️`);
+    // }
     console.log(`New emails to insert in DB! :${emailsToInsert}`);
     if (emailsToInsert && emailsToInsert.length > 0) {
       for (const email of emailsToInsert) {
@@ -253,6 +264,16 @@ export async function addNewJob(
           );
           // throw new Error(`In addNewJob getting cutter ID failed!`);
         }
+        // const resend = new Resend(process.env.RESEND_API_KEY);
+        // const data = await resend.emails.send({
+        //   from: "Acme <onboarding@resend.dev>",
+        //   to: ["horopesa494@gmail.com"],
+        //   subject: "Hello world",
+        //   text: `Hello you got assigned to jobId: ${newJob[0].id}, Invoice: ${newJob[0].invoice}`,
+        // });
+        // if (data) {
+        //   console.log(`sent email ✉️`);
+        // }
       }
     }
 

@@ -7,7 +7,7 @@ import { Button } from "./ui/button";
 export function SignOut() {
   return (
     <Button
-      variant={"outline"}
+      variant={"secondary"}
       className="w-full text-md rounded-md font-medium"
       onClick={() => signOut()}
     >

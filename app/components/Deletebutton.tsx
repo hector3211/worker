@@ -34,7 +34,7 @@ export default function DeleteButton({ jobId, jobInvoice }: DeleteButtonProps) {
           Delete
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="dark:bg-zinc-950">
         <AlertDialogHeader>
           <AlertDialogTitle className="font-bold text-2xl">
             Are you sure?
@@ -50,7 +50,13 @@ export default function DeleteButton({ jobId, jobInvoice }: DeleteButtonProps) {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            onClick={() => removeJob(jobId).then(() => setOpen(false))}
+            onClick={() =>
+              removeJob(jobId).then(() => {
+                if (!isPending) {
+                  setOpen(false);
+                }
+              })
+            }
           >
             Continue
           </AlertDialogAction>

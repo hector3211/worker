@@ -2,8 +2,10 @@
 
 import {
   ColumnDef,
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -17,6 +19,8 @@ import {
   TableRow,
 } from "../components/ui/table";
 import { Button } from "../components/ui/button";
+import { useState } from "react";
+import { Input } from "../components/ui/input";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -27,18 +31,29 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      columnFilters,
+    },
   });
 
   return (
-    <div className="container bg-gray-300 text-black dark:bg-gray-900 dark:text-white sm:max-w-4xl p-5 rounded-md border lg:max-w-6xl py-10">
-      <p className="mb-3 text-center text-2xl underline underline-offset-4">
-        All Jobs
-      </p>
+    <div className="container bg-gray-300 text-black dark:bg-gray-900 dark:text-white sm:max-w-4xl p-5 rounded-md border lg:max-w-6xl py-5 my-10">
+      <Input
+        placeholder="Filter invoices..."
+        value={(table.getColumn("invoice")?.getFilterValue() as string) ?? ""}
+        onChange={(event) =>
+          table.getColumn("invoice")?.setFilterValue(event.target.value)
+        }
+        className="max-w-sm my-2"
+      />
       <div className="w-full rounded-md border">
         <Table>
           <TableHeader>
