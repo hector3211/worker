@@ -33,7 +33,8 @@ export const authOptions: NextAuthOptions = {
       if (token && currentUser) {
         if (currentUser.email === adminKey) {
           token.userRole = adminSecret;
-          return token;
+        } else {
+          token.userRole = currentUser.role;
         }
       }
 

@@ -166,10 +166,9 @@ export function EditButton({
       console.log(
         `EditJob Form Values for updating job: ${JSON.stringify(editedJob)}`
       );
-      startTransition(async () => await updateJob(editedJob));
-      if (!isPending) {
+      await updateJob(editedJob).then(() => {
         setOpen((prev) => !prev);
-      }
+      });
       // setAlertPop(true);
       // const timer = setTimeout(() => setAlertPop(false), 3000);
       // return () => clearTimeout(timer);
@@ -182,7 +181,9 @@ export function EditButton({
     <div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant={"ghost"}>Edit</Button>
+          <Button className="hover:bg-blue-500" variant={"ghost"}>
+            Edit
+          </Button>
         </DialogTrigger>
         <DialogContent className="dark:bg-zinc-950 sm:max-w-[425px]">
           <DialogHeader>

@@ -1,7 +1,14 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "./ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
 import { Input } from "./ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -24,11 +31,16 @@ import { addNewUser } from "../_serverActions";
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
-  name: z.string(),
-  email: z.string().email({ message: "Invalid Email Address." }),
-  role: z.string().max(6, {
-    message: "Invalid role string, must be five characters or less.",
-  }),
+  name: z
+    .string()
+    .min(2, { message: "Name needs to be atleast 2 or more characters." })
+    .max(50, { message: "Name cannot exceed 50 characters." })
+    .nonempty({ message: "Name cannot be empty." }),
+  email: z
+    .string()
+    .email({ message: "Invalid Email Address." })
+    .nonempty({ message: "Must have an email." }),
+  role: z.string().nonempty({ message: "User must have a role." }),
 });
 
 export type UserForm = z.infer<typeof formSchema>;
@@ -70,15 +82,17 @@ export default function UserForm() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Invoice</FormLabel>
+                    <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input
+                        autoFocus
                         className="dark:bg-zinc-950"
                         placeholder="John Doe"
                         {...field}
                         required
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -87,7 +101,7 @@ export default function UserForm() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Invoice</FormLabel>
+                    <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
                         className="dark:bg-zinc-950"
@@ -96,6 +110,7 @@ export default function UserForm() {
                         required
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -114,11 +129,13 @@ export default function UserForm() {
                           className="dark:bg-zinc-950"
                           position="popper"
                         >
-                          <SelectItem value="Guest">Guest</SelectItem>
                           <SelectItem value="Cutter">Cutter</SelectItem>
+                          <SelectItem value="Fabricator">Fabricator</SelectItem>
+                          <SelectItem value="Guest">Guest</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />

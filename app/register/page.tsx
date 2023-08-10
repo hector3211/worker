@@ -8,7 +8,7 @@ export default async function Register() {
   //   redirect("/");
   // }
   return (
-    <div className="min-h-screen max-w-full flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center mt-20">
       <UserForm />
     </div>
   );

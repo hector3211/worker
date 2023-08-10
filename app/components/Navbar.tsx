@@ -163,7 +163,6 @@ export default function Nav() {
             </>
           )}
         </div>
-        <ThemeToggleButton />
         {session && (
           <Popover>
             <PopoverTrigger asChild>
@@ -175,7 +174,7 @@ export default function Nav() {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="dark:bg-zinc-950 mr-3 lg:mr-8">
-              <Card className="dark:bg-zinc-950">
+              <Card className="dark:bg-zinc-950 border-none">
                 <CardHeader>
                   <div className="flex justify-between items-center">
                     <div className="flex flex-col">
@@ -186,7 +185,7 @@ export default function Nav() {
                       <img
                         src={`${session.user.image}`}
                         alt="Image user"
-                        className="h-10 mr-1 rounded-full hover:cursor-pointer"
+                        className="w-10 mr-1 rounded-full hover:cursor-pointer"
                       />
                       <span className="absolute top-0 right-1 flex h-3 w-3">
                         <span className="animate-ping inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
@@ -236,6 +235,7 @@ export default function Nav() {
           </Popover>
         )}
         {!session && <SignIn />}
+        <ThemeToggleButton />
       </div>
     </div>
   );

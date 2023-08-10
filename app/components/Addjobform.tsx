@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -73,6 +73,7 @@ export default function JobForm() {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [errMsg, setErrMsg] = useState<string | null>(null);
+  const formRef = useRef();
   const form = useForm<JobForm>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -135,15 +136,14 @@ export default function JobForm() {
 
     console.log(`Add JobForm values: ${JSON.stringify(newJob)}`);
 
-    startTransition(async () => await addNewJob(newJob));
-    if (!isPending) {
+    await addNewJob(newJob).then(() => {
       setOpen((prev) => !prev);
-      // form.setValue("cutters", []);
-      // form.setValue("job.sinks", [{ value: "pl-250" }]);
-      // form.setValue("job.edges", [{ value: "flat" }]);
-      // form.setValue("job.picture", []);
-      // form.setValue("job.invoice", "");
-    }
+      form.setValue("cutters", []);
+      form.setValue("job.sinks", [{ value: "pl-250" }]);
+      form.setValue("job.edges", [{ value: "flat" }]);
+      form.setValue("job.picture", []);
+      form.setValue("job.invoice", "");
+    });
   }
   async function deletePic(idx: number) {
     const toDelete = fileKeys[idx];
@@ -209,12 +209,12 @@ export default function JobForm() {
             </div>
           ))}
         </div>
-        {!showBtn && !errMsg && (
+        {!showBtn && !errMsg ? (
           <Button onClick={() => setShowBtn(true)}>Done</Button>
-        )}
+        ) : null}
         {errMsg && <p className="text-rose-400 text-md">{errMsg}</p>}
         <Separator className="w-full" />
-        {urlPaste.length > 0 && showBtn && (
+        {urlPaste.length > 0 && showBtn ? (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <FormField
@@ -224,8 +224,14 @@ export default function JobForm() {
                   <FormItem>
                     <FormLabel>Invoice</FormLabel>
                     <FormControl>
-                      <Input placeholder="Invoice Number" {...field} required />
+                      <Input
+                        autoFocus
+                        placeholder="Invoice Number"
+                        {...field}
+                        required
+                      />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -410,7 +416,7 @@ export default function JobForm() {
               {errMsg && <p className="text-rose-400">Something went wrong</p>}
             </form>
           </Form>
-        )}
+        ) : null}
       </DialogContent>
     </Dialog>
   );

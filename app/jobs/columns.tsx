@@ -25,10 +25,30 @@ export const columns: ColumnDef<JobData>[] = [
   {
     accessorKey: "sink",
     header: "Sink",
+    cell: ({ row }) => {
+      const results = row.original.sink;
+      return (
+        <div className="flex flex-col ml-3">
+          {results?.map((sink, idx) => (
+            <p key={idx}>{sink}</p>
+          ))}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "edge",
     header: "Edge",
+    cell: ({ row }) => {
+      const results = row.original.edge;
+      return (
+        <div className="flex flex-col ml-3">
+          {results?.map((edge, idx) => (
+            <p key={idx}>{edge}</p>
+          ))}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "cutter",

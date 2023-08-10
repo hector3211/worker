@@ -7,7 +7,6 @@ import { Button } from "./ui/button";
 export function SignOut() {
   return (
     <Button
-      variant={"secondary"}
       className="w-full text-md rounded-md font-medium"
       onClick={() => signOut()}
     >
@@ -19,7 +18,8 @@ export function SignOut() {
 export function SignIn() {
   return (
     <Button
-      className="dark:bg-white dark:text-black text-md rounded-md font-medium"
+      variant={"ghost"}
+      className="hover:dark:bg-gray-900 dark:text-white text-md rounded-md font-medium"
       onClick={() => signIn()}
     >
       Sign in
