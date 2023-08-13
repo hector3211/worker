@@ -16,7 +16,7 @@ import {
   usersToJobs,
 } from "@/db/schema";
 import { adminKey, adminSecret } from "@/utils/globalConsts";
-import { and, between, eq, inArray, sql } from "drizzle-orm";
+import { and, asc, between, desc, eq, inArray, sql } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { utapi } from "uploadthing/server";
 
@@ -47,7 +47,8 @@ export async function getTodaysJobs(): Promise<Job[] | undefined> {
     const recentJobs = await db
       .select()
       .from(jobs)
-      .where(between(jobs.created_at, todayAtSixeAm, currDateTime));
+      .where(between(jobs.created_at, todayAtSixeAm, currDateTime))
+      .orderBy(desc(jobs.invoice));
     revalidateTag("recentjobs");
     return recentJobs as Job[];
   } catch (err) {
@@ -206,6 +207,7 @@ export async function getUsersJobs(email: string) {
 export async function getJobs(): Promise<JobData[] | undefined> {
   try {
     const allJobs = await db.query.jobs.findMany({
+      orderBy: (jobs, { desc }) => [desc(jobs.invoice)],
       with: {
         user: true,
       },
@@ -278,7 +280,7 @@ export async function addNewJob(
     }
 
     const newUserToJob = await db.insert(usersToJobs).values(cutterList);
-
+    revalidateTag("jobdata");
     console.log(`NEW JOB ADDED✅:${newUserToJob}\n`);
   } catch (err) {
     console.log(
@@ -286,7 +288,6 @@ export async function addNewJob(
     );
   }
   // revalidatePath("/");
-  revalidateTag("jobdata");
 }
 
 export async function lookUpUserByEmail(

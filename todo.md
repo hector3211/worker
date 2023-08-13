@@ -19,8 +19,8 @@
 [x] - admin able to delete whole jobs
 [x] - finish UI for user page
 
-[] - add a toast to comfirm completion of job for cutter page
-
-[] - add a toast to comfirm deletion of job on data table
+[] - add a Alerts to comfirm editing,deleting, and adding a job
 
 [] - admin able to delete or add pictuers for a job (after form)
+
+[] - add a Fabricator page

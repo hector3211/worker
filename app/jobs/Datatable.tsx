@@ -45,7 +45,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="container bg-gray-300 text-black dark:bg-gradient-to-br from-gray-500 via-black to-black  dark:border border-white dark:text-white sm:max-w-4xl p-5 rounded-md border lg:max-w-6xl py-5 my-10">
+    <div className="container bg-gray-300 text-black dark:bg-transparent dark:border border-white dark:text-white sm:max-w-4xl p-5 rounded-md border lg:max-w-6xl py-5 my-10">
       <Input
         placeholder="Filter invoices..."
         value={(table.getColumn("invoice")?.getFilterValue() as string) ?? ""}
@@ -54,7 +54,7 @@ export function DataTable<TData, TValue>({
         }
         className="max-w-sm my-2 drop-shadow-2xl dark:bg-zinc-950 dark:text-white dark:border border-white"
       />
-      <div className="w-full bg-background/60 dark:bg-zinc-950 dark:text-white rounded-md border backdrop-blur-2xl">
+      <div className="w-full bg-background/60 dark:bg-zinc-950 dark:text-white rounded-md border ">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

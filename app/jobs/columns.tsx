@@ -77,7 +77,7 @@ export const columns: ColumnDef<JobData>[] = [
     header: "Done",
     cell: ({ row }) => {
       const result = row.original;
-      return <p>{result.completed === false ? "⚠️" : "✅"}</p>;
+      return <p key={result.id}>{result.completed === false ? "⚠️" : "✅"}</p>;
     },
   },
   {
@@ -108,6 +108,7 @@ export const columns: ColumnDef<JobData>[] = [
 
       return (
         <EditButton
+          key={job.id}
           id={job.id}
           invoice={job.invoice}
           sinks={job.sink}

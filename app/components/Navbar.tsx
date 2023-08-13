@@ -33,15 +33,15 @@ function MobileNav() {
             Menu
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-40 ml-5">
+        <PopoverContent className="w-40 ml-5 text-black bg-gray-300 dark:bg-zinc-950 dark:text-white">
           <div className="flex flex-col items-start">
             <Link href={"/"}>
               <Button variant={"ghost"} className="text-md">
                 Home
               </Button>
             </Link>
-            {session?.user.role && (
-              <div>
+            {session?.user.role ? (
+              <>
                 {pathName === "/dashboard" ? (
                   <Button disabled>Dashboard</Button>
                 ) : (
@@ -51,15 +51,21 @@ function MobileNav() {
                     </Button>
                   </Link>
                 )}
-              </div>
-            )}
-            {session?.user.email && (
-              <Link href={`/user`}>
-                <Button variant={"ghost"} className="text-md">
-                  Projects
-                </Button>
-              </Link>
-            )}
+              </>
+            ) : null}
+            {session?.user.role ? (
+              <>
+                {pathName === "/user" ? (
+                  <Button disabled>Projects</Button>
+                ) : (
+                  <Link href={`/user`}>
+                    <Button variant={"ghost"} className="text-md">
+                      Projects
+                    </Button>
+                  </Link>
+                )}
+              </>
+            ) : null}
           </div>
         </PopoverContent>
       </Popover>
@@ -81,7 +87,7 @@ function StandardNav() {
             Home
           </Button>
         </Link>
-        {session?.user.role && (
+        {session?.user.role === "admin" && (
           <div>
             {pathName === "/dashboard" ? (
               <Button
@@ -101,7 +107,7 @@ function StandardNav() {
             )}
           </div>
         )}
-        {session?.user.email && (
+        {session?.user.role ? (
           <>
             {pathName === "/user" ? (
               <Link href={`/user`}>
@@ -124,7 +130,7 @@ function StandardNav() {
               </Link>
             )}
           </>
-        )}
+        ) : null}
       </div>
     </div>
   );
@@ -133,7 +139,7 @@ function StandardNav() {
 export default function Nav() {
   const { data: session } = useSession();
   const pathName = usePathname();
-  console.log(`current path: ${pathName}`);
+  // console.log(`current path: ${pathName}`);
 
   return (
     <div className={`flex  justify-between items-center px-5 lg:px-8 py-3`}>
@@ -141,8 +147,8 @@ export default function Nav() {
       <StandardNav />
       <div className="flex items-center space-x-1 text-black">
         <div className="hidden md:flex md:space-x-1">
-          {session?.user.role && <JobForm />}
-          {session?.user.role && (
+          {session?.user.role ? <JobForm /> : null}
+          {session?.user.role ? (
             <>
               {pathName === "/register" ? (
                 <Button
@@ -161,9 +167,9 @@ export default function Nav() {
                 </Button>
               )}
             </>
-          )}
+          ) : null}
         </div>
-        {session && (
+        {session ? (
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -233,8 +239,8 @@ export default function Nav() {
               </Card>
             </PopoverContent>
           </Popover>
-        )}
-        {!session && <SignIn />}
+        ) : null}
+        {!session ? <SignIn /> : null}
         <ThemeToggleButton />
       </div>
     </div>

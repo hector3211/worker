@@ -45,6 +45,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { EditableJob } from "@/db/schema";
+import { AlertPop } from "./Alertpopup";
 
 type EditButtonProps = {
   id: number;
@@ -83,6 +84,7 @@ export function EditButton({
 }: EditButtonProps) {
   // console.log(`current cutterEmails passed to EditButton: ${cutterEmails}\n`);
   // console.log(`current date time passed: ${dueDate}\n`);
+  const [showPopUp, setShowPopUp] = useState<true | false>(false);
   const [open, setOpen] = useState(false);
   const [alertPop, setAlertPop] = useState<true | false>(false);
   const [isPending, startTransition] = useTransition();
@@ -167,7 +169,8 @@ export function EditButton({
         `EditJob Form Values for updating job: ${JSON.stringify(editedJob)}`
       );
       await updateJob(editedJob).then(() => {
-        setOpen((prev) => !prev);
+        setOpen(false);
+        setShowPopUp(true);
       });
       // setAlertPop(true);
       // const timer = setTimeout(() => setAlertPop(false), 3000);
@@ -176,14 +179,19 @@ export function EditButton({
       console.log(`Things are starting to heat down!`);
     }
   }
+  useEffect(() => {
+    const popTimer = setTimeout(() => {
+      setShowPopUp(false);
+    }, 5000);
+
+    return () => clearTimeout(popTimer);
+  }, [showPopUp]);
 
   return (
     <div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button className="hover:bg-blue-500" variant={"ghost"}>
-            Edit
-          </Button>
+          <Button variant={"ghost"}>Edit</Button>
         </DialogTrigger>
         <DialogContent className="dark:bg-zinc-950 sm:max-w-[425px]">
           <DialogHeader>
@@ -403,17 +411,12 @@ export function EditButton({
           </Form>
         </DialogContent>
       </Dialog>
-      {alertPop && (
-        <Alert className="w-1/2 absolute top-0 left-1/4 lg:w-96 lg:left-[40%]">
-          <Terminal className="h-4 w-4" />
-          <AlertTitle className="text-left text-lg">
-            {form.getValues().invoice} ✅
-          </AlertTitle>
-          <AlertDescription className="text-left">
-            {"Successfully updated!"}
-          </AlertDescription>
-        </Alert>
-      )}
+      {showPopUp ? (
+        <AlertPop
+          invoice={`Invoice  #${form.getValues("invoice")}`}
+          message={"Successfully edited Job!"}
+        />
+      ) : null}
     </div>
   );
 }
