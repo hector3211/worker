@@ -1,17 +1,18 @@
 import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
-import UserForm from "../components/Userform";
+import JobForm from "../components/Addjobform";
 
-export default async function Register() {
-  const user = await getServerSession();
-  // if (user?.user.role !== process.env.ADMIN_SECRET) {
-  //   redirect("/");
-  // }
+export default async function NewJobPage() {
+  const currUser = await getServerSession(authOptions);
+  if (!currUser?.user.role) {
+    redirect("/");
+  }
   return (
-    <main className="container mx-auto mt-10">
+    <main className="container py-20">
       <div className="px-6 lg:px-8">
         <div
-          className="absolute inset-x-0 top-5 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80 sm:right-30"
+          className="absolute inset-x-0 top-20 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80 sm:right-30"
           aria-hidden="true"
         >
           <div
@@ -23,7 +24,7 @@ export default async function Register() {
           />
         </div>
       </div>
-      <UserForm />
+      <JobForm />
     </main>
   );
 }

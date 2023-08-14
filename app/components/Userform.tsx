@@ -66,7 +66,7 @@ export default function UserForm() {
     }
   }
   return (
-    <div className="w-2/3 md:w-1/2 rounded-md p-3 outline outlne-white outline-2 bg-gradient-to-r from-gray-800 to-gray-200">
+    <div className="w-full md:w-3/4 md:mx-auto rounded-md p-1 outline outlne-white outline-2 bg-gradient-to-r from-gray-800 to-gray-200">
       <Form {...form}>
         <Card className="drop-shadow-2xl dark:bg-zinc-950">
           <CardHeader>
@@ -86,7 +86,7 @@ export default function UserForm() {
                     <FormControl>
                       <Input
                         autoFocus
-                        className="dark:bg-zinc-950"
+                        className="dark:bg-zinc-950 "
                         placeholder="John Doe"
                         {...field}
                         required

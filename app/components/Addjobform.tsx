@@ -33,18 +33,17 @@ import {
 } from "./ui/form";
 import { addNewJob, utapiDelete } from "../_serverActions";
 import { AlertPop } from "./Alertpopup";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
 import { NewJobWithUser } from "@/db/schema";
 import "@uploadthing/react/styles.css";
 import { UploadButton } from "@/utils/uploadthing";
 import { Separator } from "./ui/separator";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 
 const formSchema = z.object({
   job: z.object({
@@ -71,7 +70,6 @@ export default function JobForm() {
   const [showPopUp, setShowPopUp] = useState<true | false>(false);
   const [urlPaste, setUrlPaste] = useState<string[]>([]);
   const [fileKeys, setFileKeys] = useState<string[]>([]);
-  const [open, setOpen] = useState(false);
   const [errMsg, setErrMsg] = useState<string | null>(null);
   const form = useForm<JobForm>({
     resolver: zodResolver(formSchema),
@@ -136,7 +134,6 @@ export default function JobForm() {
     console.log(`Add JobForm values: ${JSON.stringify(newJob)}`);
 
     await addNewJob(newJob).then(() => {
-      setOpen((prev) => !prev);
       setShowPopUp(true);
       setUrlPaste([]);
       form.setValue("cutters", [{ email: "" }]);
@@ -163,23 +160,15 @@ export default function JobForm() {
     return () => clearTimeout(popTimer);
   }, [showPopUp]);
   return (
-    <div>
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button
-            variant={"ghost"}
-            className="text-md md:text-lg hover:bg-gray-300 hover:dark:bg-gray-900 dark:text-white"
-          >
-            +Job
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="dark:bg-zinc-950">
-          <DialogHeader>
-            <DialogTitle>Add a job</DialogTitle>
-            <DialogDescription>
-              Please add all pictures for a job before moving foward
-            </DialogDescription>
-          </DialogHeader>
+    <div className="w-full md:w-3/4 md:mx-auto lg:w-1/2 rounded-md p-1 outline outlne-white outline-2 bg-gradient-to-r from-gray-800 to-gray-200">
+      <Card className="drop-shadow-2xl dark:bg-zinc-950">
+        <CardHeader>
+          <CardTitle>Add a new job</CardTitle>
+          <CardDescription>
+            Please provide the following credientials
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
           <UploadButton
             endpoint="imageUploader"
             onClientUploadComplete={(res) => {
@@ -203,15 +192,15 @@ export default function JobForm() {
           />
           <div className="flex flex-shrink justify-center items-center space-x-1">
             {urlPaste.map((pic, idx) => (
-              <div key={idx} className="relative">
+              <div key={idx} className="relative mb-3">
                 <img
                   src={`${pic}`}
                   alt="Job picture"
-                  className="rounded-md w-[120px] h-[70px]"
+                  className="rounded-md w-[250px] h-[150px]"
                 />
                 <Button
                   variant={"secondary"}
-                  className="absolute top-1 right-1 text-xs p-2 h-2 w-2 transition ease-in-out delay-75 hover:bg-red-500 hover:-translate-y-1 hover:scale-105"
+                  className="absolute top-1 right-1 text-md w-8 h-8"
                   onClick={() => deletePic(idx)}
                 >
                   X
@@ -380,8 +369,8 @@ export default function JobForm() {
                   control={form.control}
                   name="job.dueDate"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Date of birth</FormLabel>
+                    <FormItem className="flex flex-col mt-2">
+                      <FormLabel>Installation date</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -411,13 +400,16 @@ export default function JobForm() {
                         </PopoverContent>
                       </Popover>
                       <FormDescription>
-                        Your date of birth is used to calculate your age.
+                        Pick a due date for this job
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="mt-5 bg-blue-500 w-full">
+                <Button
+                  type="submit"
+                  className="mt-5 bg-blue-600 w-full text-white"
+                >
                   Submit
                 </Button>
                 {errMsg && (
@@ -426,8 +418,8 @@ export default function JobForm() {
               </form>
             </Form>
           ) : null}
-        </DialogContent>
-      </Dialog>
+        </CardContent>
+      </Card>
       {showPopUp ? (
         <AlertPop
           invoice={`Invoice  #${form.getValues("job.invoice")}`}

@@ -146,7 +146,28 @@ export default function Nav() {
       <StandardNav />
       <div className="flex items-center space-x-1 text-black">
         <div className="hidden md:flex md:space-x-1">
-          {session?.user.role ? <JobForm /> : null}
+          {session?.user.role ? (
+            <>
+              {pathName === "/newjob" ? (
+                <Button
+                  variant={"ghost"}
+                  disabled
+                  className="md:text-lg dark:text-white"
+                >
+                  +Job
+                </Button>
+              ) : (
+                <Link href={"/newjob"}>
+                  <Button
+                    variant={"ghost"}
+                    className="text-lg hover:bg-gray-300 hover:dark:bg-gray-900 dark:text-white"
+                  >
+                    +Job
+                  </Button>
+                </Link>
+              )}
+            </>
+          ) : null}
           {session?.user.role ? (
             <>
               {pathName === "/register" ? (
@@ -216,7 +237,21 @@ export default function Nav() {
                 <CardFooter>
                   <div className="flex flex-col w-full space-y-3">
                     <div className="flex flex-col items-center space-y-1 md:hidden">
-                      {session.user.role === "admin" ? <JobForm /> : null}
+                      {session?.user.role === "admin" ? (
+                        <>
+                          {pathName === "/newjob" ? (
+                            <Button disabled className="w-full">
+                              +Job
+                            </Button>
+                          ) : (
+                            <Link href={"/newjob"}>
+                              <Button variant={"ghost"} className="w-full">
+                                +Job
+                              </Button>
+                            </Link>
+                          )}
+                        </>
+                      ) : null}
                       {session?.user.role === "admin" ? (
                         <>
                           {pathName === "/register" ? (
