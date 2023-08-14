@@ -3,7 +3,6 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import AuthProvider from "./Provider";
-import QueryProvider from "./Queryprovider";
 import Footer from "./components/Footer";
 import { Providers } from "./Themeprovider";
 import { Separator } from "./components/ui/separator";
@@ -29,12 +28,10 @@ export default function RootLayout({
       >
         <Providers>
           <AuthProvider>
-            <QueryProvider>
-              <Nav />
-              <Separator />
-              {children}
-              <Footer />
-            </QueryProvider>
+            <Nav />
+            <Separator />
+            {children}
+            <Footer />
           </AuthProvider>
         </Providers>
       </body>

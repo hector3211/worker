@@ -2,7 +2,6 @@
 import * as React from "react";
 import { Button } from "./ui/button";
 import { SignIn, SignOut } from "./Authactions";
-import UploadThing from "../Uploadthing";
 import { useSession } from "next-auth/react";
 import { Popover, PopoverContent } from "@/components/ui/popover";
 import { PopoverTrigger } from "@radix-ui/react-popover";
@@ -21,6 +20,7 @@ import { Separator } from "./ui/separator";
 import ThemeToggleButton from "./Themebutton";
 import { BsFillPersonFill } from "react-icons/bs";
 import JobForm from "./Addjobform";
+import Image from "next/image";
 
 function MobileNav() {
   const { data: session } = useSession();
@@ -188,7 +188,7 @@ export default function Nav() {
                       <CardDescription>Check out your stats</CardDescription>
                     </div>
                     <div className="relative">
-                      <img
+                      <Image
                         src={`${session.user.image}`}
                         alt="Image user"
                         className="w-10 mr-1 rounded-full hover:cursor-pointer"
@@ -211,14 +211,14 @@ export default function Nav() {
                   </div>
                   <div className="flex flex-col my-1">
                     <Label>Role</Label>
-                    <p>{session.user.role ? "Admin" : "Guest"}</p>
+                    <p>{session.user.role.toUpperCase()}</p>
                   </div>
                 </CardContent>
                 <CardFooter>
                   <div className="flex flex-col w-full space-y-3">
-                    <div className="flex flex-col space-y-1 md:hidden">
-                      {session.user.role && <UploadThing />}
-                      {session?.user.role && (
+                    <div className="flex flex-col items-center space-y-1 md:hidden">
+                      {session.user.role === "admin" ? <JobForm /> : null}
+                      {session?.user.role === "admin" ? (
                         <>
                           {pathName === "/register" ? (
                             <Button disabled className="w-full">
@@ -230,7 +230,7 @@ export default function Nav() {
                             </Button>
                           )}
                         </>
-                      )}
+                      ) : null}
                     </div>
                     <Separator />
                     {session && <SignOut />}

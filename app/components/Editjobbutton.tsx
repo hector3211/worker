@@ -196,9 +196,7 @@ export function EditButton({
         <DialogContent className="dark:bg-zinc-950 sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Edit job {invoice}</DialogTitle>
-            <DialogDescription>
-              Make changes to your job here. Click submit when you're done.
-            </DialogDescription>
+            <DialogDescription>Make changes to your job here</DialogDescription>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>

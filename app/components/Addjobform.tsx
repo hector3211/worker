@@ -167,7 +167,7 @@ export default function JobForm() {
         <DialogTrigger asChild>
           <Button
             variant={"ghost"}
-            className="text-lg hover:bg-gray-300 hover:dark:bg-gray-900 dark:text-white"
+            className="text-md md:text-lg hover:bg-gray-300 hover:dark:bg-gray-900 dark:text-white"
           >
             +Job
           </Button>
