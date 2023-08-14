@@ -20,7 +20,6 @@ import { Separator } from "./ui/separator";
 import ThemeToggleButton from "./Themebutton";
 import { BsFillPersonFill } from "react-icons/bs";
 import JobForm from "./Addjobform";
-import Image from "next/image";
 
 function MobileNav() {
   const { data: session } = useSession();
@@ -188,7 +187,7 @@ export default function Nav() {
                       <CardDescription>Check out your stats</CardDescription>
                     </div>
                     <div className="relative">
-                      <Image
+                      <img
                         src={`${session.user.image}`}
                         alt="Image user"
                         className="w-10 mr-1 rounded-full hover:cursor-pointer"

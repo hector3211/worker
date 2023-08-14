@@ -15,7 +15,6 @@ import {
 } from "@/app/components/ui/card";
 import { Label } from "@/app/components/ui/label";
 import Link from "next/link";
-import Image from "next/image";
 
 export default async function UserProfile() {
   const currUser = await getServerSession(authOptions);
@@ -68,7 +67,7 @@ export default async function UserProfile() {
                           href={`${pic}`}
                           target="_blank"
                         >
-                          <Image
+                          <img
                             key={idx}
                             src={`${pic}`}
                             alt={`Picture ${idx} of job`}

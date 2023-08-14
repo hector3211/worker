@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -41,7 +41,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { JobsWithUsers, NewJobWithUser, jobs } from "@/db/schema";
+import { NewJobWithUser } from "@/db/schema";
+import "@uploadthing/react/styles.css";
 import { UploadButton } from "@/utils/uploadthing";
 import { Separator } from "./ui/separator";
 
