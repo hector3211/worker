@@ -415,6 +415,7 @@ export function EditButton({
         <AlertPop
           invoice={`Invoice  #${form.getValues("invoice")}`}
           message={"Successfully edited Job!"}
+          alertType="edit"
         />
       ) : null}
     </div>

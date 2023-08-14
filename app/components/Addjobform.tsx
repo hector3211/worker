@@ -431,6 +431,7 @@ export default function JobForm() {
         <AlertPop
           invoice={`Invoice  #${form.getValues("job.invoice")}`}
           message={"Created Job!"}
+          alertType="add"
         />
       ) : null}
     </div>

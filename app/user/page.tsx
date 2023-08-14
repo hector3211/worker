@@ -149,7 +149,7 @@ export default async function UserProfile() {
   }
   const data = await getUsersJobs(currUser.user.email);
   return (
-    <main className=" py-5">
+    <main className="py-5">
       <div className="px-6 lg:px-8">
         <div
           className="absolute inset-x-0 bottom-20 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80 sm:right-30"
@@ -166,7 +166,6 @@ export default async function UserProfile() {
       </div>
       <div className="flex justify-center h-[720px] md:h-[750px] lg:h-[800px]">
         <ScrollArea className="border border-white rounded-md w-full md:w-1/2 lg:w-1/3 p-3">
-          <h1 className="text-right font-light text-sm">All</h1>
           {data?.map((job) => (
             <Card
               key={job.id}
@@ -236,11 +235,6 @@ export default async function UserProfile() {
                   </div>
                 </div>
               </CardContent>
-              <CardFooter>
-                {job && (
-                  <DoneButton jobId={job.id} isCompleted={job.completed!} />
-                )}
-              </CardFooter>
             </Card>
           ))}
         </ScrollArea>

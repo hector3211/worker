@@ -16,8 +16,8 @@ export const columns: ColumnDef<JobData>[] = [
     cell: ({ row }) => {
       const result = row.original;
       return (
-        <Link className="font-medium" href={`/job/${result.id}`}>
-          {result.invoice}
+        <Link className="font-medium " href={`/job/${result.id}`}>
+          #{result.invoice}
         </Link>
       );
     },

@@ -26,6 +26,9 @@ export default function DeleteButton({ jobId, jobInvoice }: DeleteButtonProps) {
   async function removeJob(id: number) {
     console.log(`The removeJob function got clicked with jobID: ${id}`);
     startTransition(async () => await deleteJob(id));
+    if (!isPending) {
+      setOpen(false);
+    }
   }
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
