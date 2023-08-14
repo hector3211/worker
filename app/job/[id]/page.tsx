@@ -1,6 +1,5 @@
 import { getJob } from "@/app/_serverActions";
 import { Label } from "@/app/components/ui/label";
-import { Separator } from "@/app/components/ui/separator";
 import { IoWarningOutline } from "react-icons/io5";
 
 type PageProps = {
