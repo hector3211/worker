@@ -52,7 +52,7 @@ function MobileNav() {
                 )}
               </>
             ) : null}
-            {session?.user.role ? (
+            {session?.user.role === "Cutter" ? (
               <>
                 {pathName === "/user" ? (
                   <Button disabled>Projects</Button>
@@ -106,7 +106,7 @@ function StandardNav() {
             )}
           </div>
         )}
-        {session?.user.role ? (
+        {session?.user.role === "Cutter" ? (
           <>
             {pathName === "/user" ? (
               <Link href={`/user`}>
@@ -146,7 +146,7 @@ export default function Nav() {
       <StandardNav />
       <div className="flex items-center space-x-1 text-black">
         <div className="hidden md:flex md:space-x-1">
-          {session?.user.role ? (
+          {session?.user.role === "admin" ? (
             <>
               {pathName === "/newjob" ? (
                 <Button
@@ -168,7 +168,7 @@ export default function Nav() {
               )}
             </>
           ) : null}
-          {session?.user.role ? (
+          {session?.user.role === "admin" ? (
             <>
               {pathName === "/register" ? (
                 <Button
@@ -231,7 +231,7 @@ export default function Nav() {
                   </div>
                   <div className="flex flex-col my-1">
                     <Label>Role</Label>
-                    <p>{session.user.role.toUpperCase()}</p>
+                    <p>{session.user.role}</p>
                   </div>
                 </CardContent>
                 <CardFooter>

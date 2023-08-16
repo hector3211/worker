@@ -18,9 +18,6 @@
 [x] - finish UI for job page
 [x] - admin able to delete whole jobs
 [x] - finish UI for user page
+[x] - add a Alerts to comfirm editing,deleting, and adding a job
 
-[] - add a Alerts to comfirm editing,deleting, and adding a job
-
-[] - admin able to delete or add pictuers for a job (after form)
-
-[] - add a Fabricator page
+[] - fix edit button where cutters aren't showing!

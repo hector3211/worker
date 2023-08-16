@@ -106,9 +106,9 @@ export type EditableJob = {
   edges: string[] | null;
   completed: boolean;
   due_date: string;
-  cutters: string[] | null;
+  cutterIds: number[] | null;
 };
 export type NewJobWithUser = {
   job: NewJob;
-  cutters: string[];
+  cutters: number[];
 };

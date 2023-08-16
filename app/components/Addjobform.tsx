@@ -59,7 +59,7 @@ const formSchema = z.object({
 
   cutters: z.array(
     z.object({
-      email: z.string(),
+      id: z.string(),
     })
   ),
 });
@@ -67,6 +67,7 @@ const formSchema = z.object({
 export type JobForm = z.infer<typeof formSchema>;
 
 export default function JobForm() {
+  const [isPending, setIsPending] = useState<true | false>(false);
   const [showPopUp, setShowPopUp] = useState<true | false>(false);
   const [urlPaste, setUrlPaste] = useState<string[]>([]);
   const [fileKeys, setFileKeys] = useState<string[]>([]);
@@ -79,7 +80,7 @@ export default function JobForm() {
         sinks: [{ value: "pl-250" }],
         edges: [{ value: "flat" }],
       },
-      cutters: [{ email: "" }],
+      cutters: [{ id: "" }],
     },
   });
   const {
@@ -109,6 +110,7 @@ export default function JobForm() {
 
   async function onSubmit(values: JobForm) {
     // console.log(`Add JobForm values: ${JSON.stringify(values)}`);
+    setIsPending(true);
     const sinkArr = values.job.sinks.map((sink) => {
       return sink.value;
     });
@@ -116,8 +118,8 @@ export default function JobForm() {
       return edge.value;
     });
 
-    const cutterArr = values.cutters.map((cutter) => {
-      return cutter.email;
+    const cutterArr: number[] = values.cutters.map((cutter) => {
+      return Number(cutter.id);
     });
 
     const newJob: NewJobWithUser = {
@@ -134,14 +136,14 @@ export default function JobForm() {
     console.log(`Add JobForm values: ${JSON.stringify(newJob)}`);
 
     await addNewJob(newJob).then(() => {
+      setIsPending(false);
       setShowPopUp(true);
       setUrlPaste([]);
-      form.setValue("cutters", [{ email: "" }]);
+      form.setValue("cutters", [{ id: "" }]);
       form.setValue("job.sinks", [{ value: "pl-250" }]);
       form.setValue("job.edges", [{ value: "flat" }]);
       form.setValue("job.picture", []);
       form.setValue("job.invoice", "");
-      form.setValue("job.dueDate", new Date());
     });
   }
   async function deletePic(idx: number) {
@@ -318,7 +320,7 @@ export default function JobForm() {
                     <FormField
                       control={form.control}
                       key={field.id}
-                      name={`cutters.${idx}.email`}
+                      name={`cutters.${idx}.id`}
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Cutter</FormLabel>
@@ -328,19 +330,18 @@ export default function JobForm() {
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select Cutter" />
                                 </SelectTrigger>
-                                <SelectContent position="popper">
-                                  <SelectItem value="horopesa494@gmail.com">
-                                    Hector
-                                  </SelectItem>
-                                  <SelectItem value="carlos@ymail.com">
-                                    Carlos
-                                  </SelectItem>
-                                  <SelectItem value="robert@ymail.com">
-                                    Robert
-                                  </SelectItem>
+                                <SelectContent
+                                  typeof="number"
+                                  position="popper"
+                                  className="dark:bg-zinc-950"
+                                >
+                                  <SelectItem value="1">Hector</SelectItem>
+                                  <SelectItem value="2">Carlos</SelectItem>
+                                  <SelectItem value="3">Robert</SelectItem>
                                 </SelectContent>
                               </Select>
                             </FormControl>
+                            <FormMessage />
                             <Button
                               type="button"
                               variant="outline"
@@ -360,7 +361,7 @@ export default function JobForm() {
                     variant="outline"
                     size="sm"
                     className="mt-1"
-                    onClick={() => cutterAppend({ email: "" })}
+                    onClick={() => cutterAppend({ id: "" })}
                   >
                     Add Cutter
                   </Button>
@@ -407,6 +408,7 @@ export default function JobForm() {
                   )}
                 />
                 <Button
+                  disabled={isPending}
                   type="submit"
                   className="mt-5 bg-blue-600 w-full text-white"
                 >

@@ -53,6 +53,7 @@ export default function DeleteButton({ jobId, jobInvoice }: DeleteButtonProps) {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
+            disabled={isPending}
             onClick={() =>
               removeJob(jobId).then(() => {
                 if (!isPending) {

@@ -2,6 +2,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import JobForm from "../components/Addjobform";
+import { Suspense } from "react";
+import Loading from "../loading";
 
 export default async function NewJobPage() {
   const currUser = await getServerSession(authOptions);
@@ -24,7 +26,9 @@ export default async function NewJobPage() {
           />
         </div>
       </div>
-      <JobForm />
+      <Suspense fallback={<Loading />}>
+        <JobForm />
+      </Suspense>
     </main>
   );
 }

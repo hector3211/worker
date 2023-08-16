@@ -1,6 +1,8 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import UserForm from "../components/Userform";
+import { Suspense } from "react";
+import Loading from "../loading";
 
 export default async function Register() {
   const user = await getServerSession();
@@ -23,7 +25,9 @@ export default async function Register() {
           />
         </div>
       </div>
-      <UserForm />
+      <Suspense fallback={<Loading />}>
+        <UserForm />
+      </Suspense>
     </main>
   );
 }

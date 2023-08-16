@@ -52,7 +52,7 @@ type EditButtonProps = {
   invoice: string;
   sinks: string[] | null;
   edges: string[] | null;
-  cutterEmails: string[] | undefined;
+  cutterIds: number[] | undefined;
   completed: boolean | null;
   dueDate: Date | null;
 };
@@ -64,9 +64,9 @@ const formSchema = z.object({
   edges: z.array(z.object({ value: z.string() })).nullable(),
   completed: z.boolean().nullable(),
   dueDate: z.date().nullable(),
-  cutterEmails: z.array(
+  cutterIds: z.array(
     z.object({
-      email: z.string().email(),
+      id: z.string(),
     })
   ),
 });
@@ -78,16 +78,15 @@ export function EditButton({
   invoice,
   sinks,
   edges,
-  cutterEmails,
+  cutterIds,
   completed,
   dueDate,
 }: EditButtonProps) {
   // console.log(`current cutterEmails passed to EditButton: ${cutterEmails}\n`);
   // console.log(`current date time passed: ${dueDate}\n`);
+  const [isPending, setIsPending] = useState<true | false>(false);
   const [showPopUp, setShowPopUp] = useState<true | false>(false);
   const [open, setOpen] = useState(false);
-  const [alertPop, setAlertPop] = useState<true | false>(false);
-  const [isPending, startTransition] = useTransition();
   const form = useForm<EditableJobForm>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -103,10 +102,10 @@ export function EditButton({
         edges.map((edge) => {
           return { value: edge };
         }),
-      cutterEmails:
-        cutterEmails &&
-        cutterEmails.map((email) => {
-          return { email };
+      cutterIds:
+        cutterIds &&
+        cutterIds.map((id) => {
+          return { id: id.toString() };
         }),
       completed: completed && completed,
       dueDate: dueDate && dueDate,
@@ -134,7 +133,7 @@ export function EditButton({
     append: cutterAppend,
     remove: cutterRemove,
   } = useFieldArray({
-    name: "cutterEmails",
+    name: "cutterIds",
     control: form.control,
   });
   async function onSubmit(values: EditableJobForm) {
@@ -145,6 +144,7 @@ export function EditButton({
     // console.log(
     //   `Reformated due-date: ${values.dueDate?.toISOString().slice(0, 10)}`
     // );
+    setIsPending(true);
     if (values && values.sinks && values.edges && values.dueDate) {
       console.log(`Things are starting to heat up!`);
       const sinkArr = values.sinks.map((sink) => {
@@ -154,8 +154,8 @@ export function EditButton({
         return edge.value;
       });
 
-      const cutterArr = values.cutterEmails.map((cutter) => {
-        return cutter.email;
+      const cutterArr = values.cutterIds.map((cutter) => {
+        return Number(cutter.id);
       });
       const editedJob: EditableJob = {
         ...values,
@@ -163,13 +163,14 @@ export function EditButton({
         edges: edgeArr,
         due_date: values.dueDate.toISOString().slice(0, 10),
         completed: values.completed ? values.completed : false,
-        cutters: cutterArr,
+        cutterIds: cutterArr,
       };
       console.log(
         `EditJob Form Values for updating job: ${JSON.stringify(editedJob)}`
       );
       await updateJob(editedJob).then(() => {
         setOpen(false);
+        setIsPending(false);
         setShowPopUp(true);
       });
       // setAlertPop(true);
@@ -285,14 +286,14 @@ export function EditButton({
                   <FormField
                     control={form.control}
                     key={field.id}
-                    name={`cutterEmails.${idx}.email`}
+                    name={`cutterIds.${idx}.id`}
                     render={({ field }) => (
                       <FormItem className="mt-3">
                         <FormLabel>Cutter</FormLabel>
                         <div className="flex items-center space-x-1">
                           <FormControl className="text-black">
                             <Select
-                              defaultValue={field.value}
+                              defaultValue={field.value.toString()}
                               onValueChange={field.onChange}
                             >
                               <SelectTrigger>
@@ -302,18 +303,13 @@ export function EditButton({
                                 />
                               </SelectTrigger>
                               <SelectContent
+                                typeof="number"
                                 className="dark:bg-zinc-950"
                                 position="popper"
                               >
-                                <SelectItem value="horopesa494@gmail.com">
-                                  Hector
-                                </SelectItem>
-                                <SelectItem value="carlos@ymail.com">
-                                  Carlos
-                                </SelectItem>
-                                <SelectItem value="robert@ymail.com">
-                                  Robert
-                                </SelectItem>
+                                <SelectItem value="1">Hector</SelectItem>
+                                <SelectItem value="2">Carlos</SelectItem>
+                                <SelectItem value="3">Robert</SelectItem>
                               </SelectContent>
                             </Select>
                           </FormControl>
@@ -326,6 +322,7 @@ export function EditButton({
                             Delete
                           </Button>
                         </div>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -334,7 +331,7 @@ export function EditButton({
                   type="button"
                   size="sm"
                   className="mt-1"
-                  onClick={() => cutterAppend({ email: "" })}
+                  onClick={() => cutterAppend({ id: "" })}
                 >
                   Add Cutter
                 </Button>

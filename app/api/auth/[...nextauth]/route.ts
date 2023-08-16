@@ -1,4 +1,4 @@
-import { getUserInfo } from "@/app/_serverActions";
+import { getUserByEmail, getUserInfo } from "@/app/_serverActions";
 import { adminKey, adminSecret } from "@/utils/globalConsts";
 import NextAuth from "next-auth";
 import type { NextAuthOptions } from "next-auth";
@@ -29,7 +29,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async jwt({ token }) {
-      const currentUser = await getUserInfo(token.email || "");
+      const currentUser = await getUserByEmail(token.email || "");
       if (token && currentUser) {
         if (currentUser.email === adminKey) {
           token.userRole = adminSecret;

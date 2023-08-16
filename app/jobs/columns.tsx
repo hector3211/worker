@@ -89,8 +89,8 @@ export const columns: ColumnDef<JobData>[] = [
     enableHiding: true,
     cell: ({ row }) => {
       const job = row.original;
-      const cutterEmails: string[] = job.user.map((cutter) => {
-        return cutter.userEmail;
+      const cutterIds: number[] = job.user.map((cutter) => {
+        return cutter.userId;
       });
       let myDate: Date | null = new Date();
       const mystring: string | null = job.due_date;
@@ -113,7 +113,7 @@ export const columns: ColumnDef<JobData>[] = [
           invoice={job.invoice}
           sinks={job.sink}
           edges={job.edge}
-          cutterEmails={cutterEmails}
+          cutterIds={cutterIds}
           completed={job.completed as boolean}
           dueDate={myDate}
         />
