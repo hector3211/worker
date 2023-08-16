@@ -19,7 +19,7 @@ export default async function JobHome({ params: { id } }: PageProps) {
             {job?.pictures && job.pictures.length > 0 ? (
               <div className="flex overflow-x-auto scroll-smooth max-w-full p-4 space-x-2 bg-neutral rounded-box">
                 {job?.pictures?.map((pic, idx) => (
-                  <Link href={pic} target="_blank">
+                  <Link key={idx} href={pic} target="_blank">
                     <img
                       key={idx}
                       alt={`picture #${idx}`}
