@@ -64,13 +64,13 @@ export default async function DashBoard() {
                   <TableRow key={job.id}>
                     <TableCell className="font-medium">{job.invoice}</TableCell>
                     <TableCell className="flex flex-col">
-                      {job.sink?.map((sink) => (
-                        <p>{sink}</p>
+                      {job.sink?.map((sink, idx) => (
+                        <p key={idx}>{sink}</p>
                       ))}
                     </TableCell>
                     <TableCell className="flex flex-col">
-                      {job.edge?.map((edge) => (
-                        <p>{edge}</p>
+                      {job.edge?.map((edge, idx) => (
+                        <p key={idx}>{edge}</p>
                       ))}
                     </TableCell>
                     <TableCell className="text-right">
