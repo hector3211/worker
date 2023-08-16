@@ -72,7 +72,7 @@ export async function deleteJob(jobId: number): Promise<void | undefined> {
   }
 }
 
-export async function updateJob(job: EditableJob) {
+export async function updateJob(job: EditableJob): Promise<string | undefined> {
   try {
     // updating selected job
     const updatedJob = await db
@@ -84,8 +84,8 @@ export async function updateJob(job: EditableJob) {
         due_date: job.due_date,
       })
       .where(eq(jobs.id, job.id))
-      .returning({ updatedJobId: jobs.id });
-    console.log(`Just updated ✅ jobID: ${updatedJob}`);
+      .returning({ updatedJobId: jobs.id, updatedJobInvoice: jobs.invoice });
+    console.log(`Just updated ✅ jobID: ${updatedJob[0].updatedJobId}`);
 
     // querying all users on selected job
     const usersOnJob = await db
@@ -104,7 +104,6 @@ export async function updateJob(job: EditableJob) {
 
     // getting old cutter list
     const idsToDelete = currentUserIds?.filter((id) => !newIds?.includes(id));
-    console.log(`Current cutters IDs to delete from DB: ${idsToDelete}`);
     // deleting cutters no longer on selected job
     if (idsToDelete.length > 0) {
       for (const id of idsToDelete) {
@@ -121,30 +120,11 @@ export async function updateJob(job: EditableJob) {
       console.log(`No IDS to Delete!`);
     }
 
-    // newly added emails('cutters') to job
-    const idsToInsert = newIds?.filter(
-      (email) => !currentUserIds.includes(email)
-    );
-
-    const resend = new Resend(process.env.RESEND_API_KEY);
-    const email = process.env.EMAIL as string;
-    const data = await resend.emails.send({
-      from: "Acme <onboarding@resend.dev>",
-      to: [email],
-      subject: "Hello world",
-      react: Email({
-        userName: "hector",
-        invitedByEmail: "Acme <onboarding@resend.dev>",
-        inviteLink: `https://worker-phi.vercel.app/job/${job.id}`,
-      }),
-    });
-    if (data) {
-      console.log(`sent email ✉️`);
-    }
-    // console.log(`New emails to insert in DB! :${emailsToInsert}`);
+    // newly added ids('cutters') to job
+    const idsToInsert = newIds?.filter((id) => !currentUserIds.includes(id));
     if (idsToInsert && idsToInsert.length > 0) {
       for (const id of idsToInsert) {
-        const userToInsert = await getUserInfo(id);
+        const userToInsert = await getUserById(id);
         if (userToInsert) {
           // inserting new emails(cutters) associated with selected job
           const newAddedUserToJob = await db
@@ -161,15 +141,31 @@ export async function updateJob(job: EditableJob) {
           );
         } else {
           console.log(
-            `Error userToInsert failed! when adding new cutters to usersToJobs table`
+            `Error getting UserInfoById failed! when adding new cutters to usersToJobs table`
           );
         }
       }
     } else {
       console.log(`No IDS to Insert`);
     }
+    // const resend = new Resend(process.env.RESEND_API_KEY);
+    // const email = process.env.EMAIL as string;
+    // const data = await resend.emails.send({
+    //   from: "Acme <onboarding@resend.dev>",
+    //   to: [email],
+    //   subject: "Hello world",
+    //   react: Email({
+    //     userName: "hector",
+    //     invitedByEmail: "Acme <onboarding@resend.dev>",
+    //     inviteLink: `https://worker-phi.vercel.app/job/${job.id}`,
+    //   }),
+    // });
+    // if (data) {
+    //   console.log(`sent email ✉️`);
+    // }
     revalidateTag("jobdata");
     console.log(`Everything worked correctly!!! 🆕`);
+    return updatedJob[0].updatedJobInvoice;
   } catch (err) {
     console.log(
       `editJob function failed! _serveractions file with error ${err}`
@@ -232,7 +228,7 @@ export async function getUserByName(
   const user = await db.select().from(users).where(eq(users.name, userName));
   return user[0];
 }
-export async function getUserInfo(userId: number): Promise<User | undefined> {
+export async function getUserById(userId: number): Promise<User | undefined> {
   // console.log(`getcutterINFO email: ${email}`);
   const user = await db.select().from(users).where(eq(users.id, userId));
   return user[0];
@@ -253,7 +249,7 @@ export async function getUserByEmail(email: string): Promise<User | undefined> {
 
 export async function addNewJob(
   job: NewJobWithUser
-): Promise<void | undefined> {
+): Promise<string | undefined> {
   // console.log(`job object getting passed down: ${JSON.stringify(job)}\n`);
   try {
     const newJob = await db
@@ -266,7 +262,7 @@ export async function addNewJob(
     if (job.cutters) {
       for (const cutter of job.cutters) {
         // console.log(`current cutter name: ${cutter}\n`);
-        const cutterInfo = await getUserInfo(cutter);
+        const cutterInfo = await getUserById(cutter);
         if (cutterInfo) {
           // console.log(`Got cutter ID⭐: ${cutterId}\n`);
           cutterList.push({
@@ -281,28 +277,29 @@ export async function addNewJob(
           );
           // throw new Error(`In addNewJob getting cutter ID failed!`);
         }
-        const resend = new Resend(process.env.RESEND_API_KEY);
-        const email = process.env.EMAIL as string;
-        const data = await resend.emails.send({
-          from: "Acme <onboarding@resend.dev>",
-          to: [email],
-          subject: "New Worker Job",
-          react: Email({
-            userName: "hector",
-            invitedByEmail: "Acme <onboarding@resend.dev>",
-            inviteLink: `https://worker-phi.vercel.app/job/${newJob[0].id}`,
-            jobImg: newJob?.[0].pictures?.[0],
-          }),
-        });
-        if (data) {
-          console.log(`sent email ✉️`);
-        }
+        // const resend = new Resend(process.env.RESEND_API_KEY);
+        // const email = process.env.EMAIL as string;
+        // const data = await resend.emails.send({
+        //   from: "Acme <onboarding@resend.dev>",
+        //   to: [email],
+        //   subject: "New Worker Job",
+        //   react: Email({
+        //     userName: "hector",
+        //     invitedByEmail: "Acme <onboarding@resend.dev>",
+        //     inviteLink: `https://worker-phi.vercel.app/job/${newJob[0].id}`,
+        //     jobImg: newJob?.[0].pictures?.[0],
+        //   }),
+        // });
+        // if (data) {
+        //   console.log(`sent email ✉️`);
+        // }
       }
     }
 
     const newUserToJob = await db.insert(usersToJobs).values(cutterList);
     revalidateTag("jobdata");
-    console.log(`NEW JOB ADDED✅:${newUserToJob}\n`);
+    console.log(`NEW JOB ADDED✅:\n${JSON.stringify(newUserToJob)}\n`);
+    return newJob[0].invoice;
   } catch (err) {
     console.log(
       `InsertNewJob functin failed! _serveractions file with error ${err}`

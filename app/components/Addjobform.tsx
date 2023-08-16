@@ -119,7 +119,7 @@ export default function JobForm() {
     });
 
     const cutterArr: number[] = values.cutters.map((cutter) => {
-      return Number(cutter.id);
+      return parseInt(cutter.id);
     });
 
     const newJob: NewJobWithUser = {
@@ -135,7 +135,8 @@ export default function JobForm() {
 
     console.log(`Add JobForm values: ${JSON.stringify(newJob)}`);
 
-    await addNewJob(newJob).then(() => {
+    try {
+      await addNewJob(newJob);
       setIsPending(false);
       setShowPopUp(true);
       setUrlPaste([]);
@@ -144,7 +145,12 @@ export default function JobForm() {
       form.setValue("job.edges", [{ value: "flat" }]);
       form.setValue("job.picture", []);
       form.setValue("job.invoice", "");
-    });
+    } catch (err) {
+      setErrMsg(
+        `Sorry something went wrong! this feature will be back shortly`
+      );
+      console.log(`AddJobForm Failed with error: ${err}`);
+    }
   }
   async function deletePic(idx: number) {
     const toDelete = fileKeys[idx];
@@ -260,6 +266,7 @@ export default function JobForm() {
                               Delete
                             </Button>
                           </div>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -301,6 +308,7 @@ export default function JobForm() {
                               Delete
                             </Button>
                           </div>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -341,7 +349,6 @@ export default function JobForm() {
                                 </SelectContent>
                               </Select>
                             </FormControl>
-                            <FormMessage />
                             <Button
                               type="button"
                               variant="outline"
@@ -352,6 +359,7 @@ export default function JobForm() {
                               Delete
                             </Button>
                           </div>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />

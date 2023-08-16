@@ -27,6 +27,20 @@ export const users = pgTable(
     };
   }
 );
+
+const CompletingTypes = {
+  Entered: "entered",
+  Cut: "cut",
+  Fabricated: "fabricated",
+} as const;
+
+type CompletingTitiles = (typeof CompletingTypes)[keyof typeof CompletingTypes];
+
+type CompletingSteps = {
+  title: CompletingTitiles;
+  completed: boolean;
+};
+
 export const jobs = pgTable("jobs", {
   id: serial("id").primaryKey(),
   invoice: varchar("invoice").notNull(),

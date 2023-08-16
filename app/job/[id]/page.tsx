@@ -1,5 +1,6 @@
 import { getJob } from "@/app/_serverActions";
 import { Label } from "@/app/components/ui/label";
+import Link from "next/link";
 import { IoWarningOutline } from "react-icons/io5";
 
 type PageProps = {
@@ -18,12 +19,14 @@ export default async function JobHome({ params: { id } }: PageProps) {
             {job?.pictures && job.pictures.length > 0 ? (
               <div className="flex overflow-x-auto scroll-smooth max-w-full p-4 space-x-2 bg-neutral rounded-box">
                 {job?.pictures?.map((pic, idx) => (
-                  <img
-                    key={idx}
-                    alt={`picture #${idx}`}
-                    className="lg:w-1/2 w-full lg:h-auto h-64 object-cover object-center rounded"
-                    src={`${pic}`}
-                  />
+                  <Link href={pic} target="_blank">
+                    <img
+                      key={idx}
+                      alt={`picture #${idx}`}
+                      className="w-full lg:w-1/2 lg:h-auto h-64 object-cover object-center rounded"
+                      src={`${pic}`}
+                    />
+                  </Link>
                 ))}
               </div>
             ) : (

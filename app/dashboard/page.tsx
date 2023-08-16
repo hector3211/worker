@@ -6,19 +6,29 @@ import { DataTable } from "../jobs/Datatable";
 import { columns } from "../jobs/columns";
 import Footer from "../components/Footer";
 import { ScrollArea } from "../components/ui/scroll-area";
+import Loading from "../loading";
+import { Separator } from "../components/ui/separator";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../components/ui/table";
 
 async function fetchJobs() {
-  // const recentJobs = await getTodaysJobs();
+  const recentJobs = await getTodaysJobs();
   const allJobs = await getJobs();
   return {
-    // recent: recentJobs,
+    recent: recentJobs,
     all: allJobs,
   };
 }
 
 export default async function DashBoard() {
-  const { all } = await fetchJobs();
-  const user = await getServerSession(authOptions);
+  const { recent, all } = await fetchJobs();
 
   return (
     <main className="pb-10">
@@ -36,7 +46,49 @@ export default async function DashBoard() {
           />
         </div>
       </div>
-      {all && <DataTable columns={columns} data={all} />}
+      <div className="flex flex-col">
+        {recent && recent.length > 0 ? (
+          <Suspense fallback={<Loading />}>
+            <Table>
+              <TableCaption>A list of todays invoices.</TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[100px]">Invoice</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Method</TableHead>
+                  <TableHead className="text-right">Amount</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {recent.map((job) => (
+                  <TableRow key={job.id}>
+                    <TableCell className="font-medium">{job.invoice}</TableCell>
+                    <TableCell className="flex flex-col">
+                      {job.sink?.map((sink) => (
+                        <p>{sink}</p>
+                      ))}
+                    </TableCell>
+                    <TableCell className="flex flex-col">
+                      {job.edge?.map((edge) => (
+                        <p>{edge}</p>
+                      ))}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {job.completed === false ? "⚠️" : "✅"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Suspense>
+        ) : null}
+        <Separator className="w-full" />
+        {all ? (
+          <Suspense fallback={<Loading />}>
+            <DataTable columns={columns} data={all} />
+          </Suspense>
+        ) : null}
+      </div>
     </main>
   );
 }

@@ -84,6 +84,7 @@ export function EditButton({
 }: EditButtonProps) {
   // console.log(`current cutterEmails passed to EditButton: ${cutterEmails}\n`);
   // console.log(`current date time passed: ${dueDate}\n`);
+  const [errMsg, setErrMsg] = useState<string | null>(null);
   const [isPending, setIsPending] = useState<true | false>(false);
   const [showPopUp, setShowPopUp] = useState<true | false>(false);
   const [open, setOpen] = useState(false);
@@ -137,10 +138,10 @@ export function EditButton({
     control: form.control,
   });
   async function onSubmit(values: EditableJobForm) {
-    console.log("edit button got pressed");
-    console.log(
-      `EditJob Form Values for updating job step ONE: ${JSON.stringify(values)}`
-    );
+    // console.log("edit button got pressed");
+    // console.log(
+    //   `EditJob Form Values for updating job step ONE: ${JSON.stringify(values)}`
+    // );
     // console.log(
     //   `Reformated due-date: ${values.dueDate?.toISOString().slice(0, 10)}`
     // );
@@ -155,7 +156,7 @@ export function EditButton({
       });
 
       const cutterArr = values.cutterIds.map((cutter) => {
-        return Number(cutter.id);
+        return parseInt(cutter.id);
       });
       const editedJob: EditableJob = {
         ...values,
@@ -165,19 +166,24 @@ export function EditButton({
         completed: values.completed ? values.completed : false,
         cutterIds: cutterArr,
       };
-      console.log(
-        `EditJob Form Values for updating job: ${JSON.stringify(editedJob)}`
-      );
-      await updateJob(editedJob).then(() => {
+      // console.log(
+      //   `EditJob Form Values for updating job: ${JSON.stringify(editedJob)}`
+      // );
+      try {
+        await updateJob(editedJob);
         setOpen(false);
         setIsPending(false);
         setShowPopUp(true);
-      });
-      // setAlertPop(true);
-      // const timer = setTimeout(() => setAlertPop(false), 3000);
-      // return () => clearTimeout(timer);
+      } catch (err) {
+        setErrMsg(
+          `Oops somethings gone terribly wrong! this feature will be back shortly`
+        );
+        // console.log(
+        //   `EditJob Button form failed editing job! with error: ${err}`
+        // );
+      }
     } else {
-      console.log(`Things are starting to heat down!`);
+      console.log(`Error getting values from edit form inputs`);
     }
   }
   useEffect(() => {
@@ -394,13 +400,17 @@ export function EditButton({
                 )}
               />
               <DialogFooter>
-                <Button
-                  disabled={isPending}
-                  type="submit"
-                  className="mt-5 w-full"
-                >
-                  Submit
-                </Button>
+                {errMsg ? (
+                  <p className="text-rose-400 text-md">{errMsg}</p>
+                ) : (
+                  <Button
+                    disabled={isPending}
+                    type="submit"
+                    className="mt-5 w-full"
+                  >
+                    Submit
+                  </Button>
+                )}
               </DialogFooter>
             </form>
           </Form>

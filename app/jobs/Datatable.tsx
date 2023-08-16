@@ -13,6 +13,7 @@ import {
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -56,6 +57,7 @@ export function DataTable<TData, TValue>({
       />
       <div className="w-full bg-background/60 dark:bg-zinc-950 dark:text-white rounded-md border ">
         <Table>
+          <TableCaption>A list of all invoices.</TableCaption>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>

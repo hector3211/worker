@@ -1,4 +1,4 @@
-import { getUserByEmail, getUserInfo } from "@/app/_serverActions";
+import { getUserByEmail } from "@/app/_serverActions";
 import { adminKey, adminSecret } from "@/utils/globalConsts";
 import NextAuth from "next-auth";
 import type { NextAuthOptions } from "next-auth";
