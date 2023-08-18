@@ -432,7 +432,7 @@ export default function JobForm() {
       </Card>
       {showPopUp ? (
         <AlertPop
-          invoice={`Invoice  #${form.getValues("job.invoice")}`}
+          invoice={`Sucess!`}
           message={"Created Job!"}
           alertType="add"
         />

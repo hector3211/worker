@@ -26,11 +26,13 @@ import { Input } from "../components/ui/input";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  name: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  name,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const table = useReactTable({
@@ -57,7 +59,7 @@ export function DataTable<TData, TValue>({
       />
       <div className="w-full bg-background/60 dark:bg-zinc-950 dark:text-white rounded-md border ">
         <Table>
-          <TableCaption>A list of all invoices.</TableCaption>
+          <TableCaption>{name}</TableCaption>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>

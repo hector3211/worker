@@ -39,18 +39,26 @@ export async function getJob(id: number): Promise<JobData | undefined> {
   }
 }
 
-export async function getTodaysJobs(): Promise<Job[] | undefined> {
+export async function getTodaysJobs(): Promise<JobData[] | undefined> {
   try {
     const currDateTime = new Date();
     const todayAtSixeAm = new Date();
     todayAtSixeAm.setHours(6, 0, 0, 0);
-    const recentJobs = await db
-      .select()
-      .from(jobs)
-      .where(between(jobs.created_at, todayAtSixeAm, currDateTime))
-      .orderBy(desc(jobs.invoice));
+    const recentJobs = await db.query.jobs.findMany({
+      where: between(jobs.created_at, todayAtSixeAm, currDateTime),
+      orderBy: (jobs, { desc }) => [desc(jobs.invoice)],
+      with: {
+        user: true,
+      },
+    });
+
+    // const recentJobs = await db
+    //   .select()
+    //   .from(jobs)
+    //   .where(between(jobs.created_at, todayAtSixeAm, currDateTime))
+    //   .orderBy(desc(jobs.invoice));
     revalidateTag("recentjobs");
-    return recentJobs as Job[];
+    return recentJobs as JobData[];
   } catch (err) {
     console.log(
       `GetRecentJobs function failed! dbactions file with error ${err}`

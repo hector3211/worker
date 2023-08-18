@@ -46,46 +46,20 @@ export default async function DashBoard() {
           />
         </div>
       </div>
-      <div className="flex flex-col">
+      <div className="container mx-auto flex flex-col">
         {recent && recent.length > 0 ? (
           <Suspense fallback={<Loading />}>
-            <Table>
-              <TableCaption>A list of todays invoices.</TableCaption>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">Invoice</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Method</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {recent.map((job) => (
-                  <TableRow key={job.id}>
-                    <TableCell className="font-medium">{job.invoice}</TableCell>
-                    <TableCell className="flex flex-col">
-                      {job.sink?.map((sink, idx) => (
-                        <p key={idx}>{sink}</p>
-                      ))}
-                    </TableCell>
-                    <TableCell className="flex flex-col">
-                      {job.edge?.map((edge, idx) => (
-                        <p key={idx}>{edge}</p>
-                      ))}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {job.completed === false ? "⚠️" : "✅"}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <DataTable
+              name="Today's invoices"
+              columns={columns}
+              data={recent}
+            />
           </Suspense>
         ) : null}
-        <Separator className="w-full" />
+        <Separator className="w-full my-3" />
         {all ? (
           <Suspense fallback={<Loading />}>
-            <DataTable columns={columns} data={all} />
+            <DataTable name="All invoices" columns={columns} data={all} />
           </Suspense>
         ) : null}
       </div>
